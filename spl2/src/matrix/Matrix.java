@@ -39,22 +39,14 @@ public class Matrix {
 	public void setElmt(Matrix m, int i, int j, float val) {
 		// Mengubah elemen matriks di indeks i,j dengan nilai val, diasumsikan indeks valid
 		m.mtrx[i][j] = val;
-		return;
 	}
 	
-	private void makeSatuUtama(Matrix m, int col) {
-		// Mendapat elemen pertama pada baris yang tidak 0
-		if (col <= 0 || col > m.col) {
-			return IDX_UNDEF;
-		}
-		else {
-			int i = 0;
-			while (i < m.row) {
-				if(getElmt(m,i,col) != 0) {
-					for (int j=0;j<m.col;j++) {
-						setElmt(m,i,j,getElmt(m,i,j)/getElmt(m,i,col));
-					}
-				}
+	private void MakeSatuUtama(Matrix m) {
+		// Melakukan eliminasi Gauss pada Matrix m
+		for (int i=0;i<m.row;i++) {
+			m.mtrx[i][i] /= getElmt(m,i,i);
+			for (int j=i+1;j<m.col;j++) {
+				
 			}
 		}
 	}
