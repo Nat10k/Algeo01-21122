@@ -53,8 +53,8 @@ public class Matrix {
         this.mtrx = new double[nRow][nCol];
         Scanner input = new Scanner(System.in);
 		for(int i=0; i<nRow; i++){
+			System.out.println("Baris " + (i+1));
             for(int j=0; j<nCol; j++){
-                System.out.println("M[" + (i+1) + "]" + "[" +(j+1)+"] : ");
                 this.setElmt(i,j,input.nextDouble());
             }
         }
@@ -71,27 +71,27 @@ public class Matrix {
         }
     }
     
-    public static double[] gaussJordan (Matrix m, int nRow, int nCol ){
+    public static double[] gaussJordan (Matrix m){
     	// Fungsi eliminasi Gauss Jordan
         int i,j,k;
         double t;
-        for(j=0; j<nCol; j++){
-            for(i=0; i<nRow; i++)
+        for(j=0; j<m.getCol(); j++){
+            for(i=0; i<m.getRow(); i++)
             {
                 if(i!=j)
                 {
                     t=m.getElmt(i,j)/m.getElmt(j,j);
-                    for(k=0; k<nCol+1; k++)
+                    for(k=0; k<m.getCol(); k++)
                     {
                         m.setElmt(i,k,m.getElmt(i,k)-t*m.getElmt(j,k));
                     }
                 }
             }
         }
-        double[] a = new double[nRow];
-        for(i=0; i<nRow; i++) 
+        double[] a = new double[m.getRow()];
+        for(i=0; i<m.getRow(); i++) 
         {
-            a[i]=m.getElmt(i,nCol)/m.getElmt(i,i);
+            a[i]=m.getElmt(i,m.getCol())/m.getElmt(i,i);
             // System.out.println("a"+ (i) + "= " + a[i]);
         }
         return a;
@@ -135,7 +135,7 @@ public class Matrix {
             m.setElmt(i, n, input.nextDouble());
         }
         m.displayMatrix();
-        a = gaussJordan(m, n, n);
+        a = gaussJordan(m);
         y = a[0];
         for (int i=1; i<n; i++){
             y += a[i]*pangkat(x, i);
@@ -181,7 +181,7 @@ public class Matrix {
 		        }
 	        	
 	        	// Ubah elemen pertama baris maksimal menjadi 1 utama, bagi seluruh baris dengan elemen pertama
-	        	for (int j=k;j<m.getCol();j++) {
+	        	for (int j=0;j<m.getCol();j++) {
 	        		m.setElmt(row_max, j, (m.getElmt(row_max, j)/m.getElmt(row_max, k)));
 	        	}
 	
@@ -223,17 +223,67 @@ public class Matrix {
 		}
 	}
 	
-	private static void linearRegression(int n, int m) {
-		Matrix equations = new Matrix();
-		equations.readMatrix(m, n+1);
+	public static void multiRegression() {
+		// Melakukan regresi linear berganda
 		
+		// Menerima banyak variabel dan jumlah sample
+		int n,m;
+		double sum;
+		
+		Scanner input = new Scanner(System.in);
+		System.out.println("Masukkan banyak peubah x");
+		n = input.nextInt();
+		System.out.println("Masukkan banyak sample");
+		m = input.nextInt();
+		
+		// Menerima masukan data
+		Matrix data = new Matrix();
+		System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
+		data.readMatrix(m, n+1);
+		
+		// Membuat matriks SPL regresi
+		Matrix equations = new Matrix();
+		equations.setRow(n+1);
+		equations.setCol(n+2);
+		equations.mtrx = new double[n+1][n+2];
+		for (int i=0; i<equations.getRow();i++) {
+			for (int j=0; j<equations.getCol();j++) {
+				if (i == 0 && j == 0) { // Koefisien B0 pertama
+					equations.setElmt(i, j, m);
+				} 
+				else if (i==0) { // SPL baris pertama
+					sum = 0;
+					for (int k=0; k<data.getRow();k++) {
+						sum += data.getElmt(k,j-1);
+					}
+					equations.setElmt(i, j, sum);
+				}
+				else if (j==0) { // SPL kolom pertama
+					sum = 0;
+					for (int k=0; k<data.getRow();k++) {
+						sum += data.getElmt(k,i-1);
+					}
+					equations.setElmt(i, j, sum);
+				}
+				else {
+					sum = 0;
+					for (int k=0; k<data.getRow();k++) {
+						sum += data.getElmt(k, i-1) * data.getElmt(k,j-1);
+					}
+					equations.setElmt(i, j, sum);
+				}
+			}
+		}
+		equations.displayMatrix();
+		System.out.println(gaussJordan(equations));
 	}
 
 	public static void main(String[] args) {
-        Matrix m = new Matrix();
-        m.readMatrix(3, 3);
-        forwardElimination(m);
-        m.displayMatrix();
+//        Matrix m = new Matrix();
+//        m.readMatrix(3, 4);
+//        forwardElimination(m);
+//        m.displayMatrix();
+		multiRegression();
 	}
 
 }
