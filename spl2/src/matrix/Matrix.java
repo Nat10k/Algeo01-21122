@@ -71,28 +71,36 @@ public class Matrix {
         }
     }
     
-    public static double[] gaussJordan (Matrix m){
-    	// Fungsi eliminasi Gauss Jordan
+    public static double[] gaussElim (Matrix m){
+    	// Fungsi eliminasi Gauss Jordan, m berbentuk matrix augmented
         int i,j,k;
         double t;
-        for(j=0; j<m.getCol(); j++){
-            for(i=0; i<m.getRow(); i++)
-            {
-                if(i!=j)
-                {
-                    t=m.getElmt(i,j)/m.getElmt(j,j);
-                    for(k=0; k<m.getCol(); k++)
-                    {
-                        m.setElmt(i,k,m.getElmt(i,k)-t*m.getElmt(j,k));
-                    }
-                }
-            }
-        }
+//        for(j=0; j<m.getCol(); j++){
+//            for(i=0; i<m.getRow(); i++)
+//            {
+//                if(i!=j)
+//                {
+//                    t=m.getElmt(i,j)/m.getElmt(j,j);
+//                    for(k=0; k<m.getCol(); k++)
+//                    {
+//                        m.setElmt(i,k,(m.getElmt(i,k)-t*m.getElmt(j,k)));
+//                    }
+//                }
+//            }
+//        }
+        
+        forwardElimination(m);
         double[] a = new double[m.getRow()];
-        for(i=0; i<m.getRow(); i++) 
+        
+        // Inisialisasi array penampung hasil
+        for(i=0; i < m.getRow(); i++) 
         {
-            a[i]=m.getElmt(i,m.getCol())/m.getElmt(i,i);
-            // System.out.println("a"+ (i) + "= " + a[i]);
+            a[i]=0;
+        }
+        
+        // Backwards substitution
+        for (i = m.getRow()-1; i>=0; i++) {
+        	a[i] = m.getElmt(i, m.getCol()-1); 
         }
         return a;
     }
@@ -135,7 +143,7 @@ public class Matrix {
             m.setElmt(i, n, input.nextDouble());
         }
         m.displayMatrix();
-        a = gaussJordan(m);
+        a = gaussElim(m);
         y = a[0];
         for (int i=1; i<n; i++){
             y += a[i]*pangkat(x, i);
@@ -164,36 +172,45 @@ public class Matrix {
 		int row_max;
 		double max, factor;
 		
-		for (int k=0;k<m.getRow()-1;k++) {
-	        // Mencari nilai terbesar dari tiap baris pada kolom yang bersangkutan
-	        row_max = k;
-	        max = m.getElmt(row_max, k);
-	        for (int i=k+1;i<m.getRow();i++) {
-	            if(Math.abs(m.getElmt(i, k)) > max) {
-	                row_max = i;
-	                max = m.getElmt(i, k);
-	            }
-	        }
-
-	        if (max != 0) { // Jika kolom seluruhnya berisi 0, jangan lakukan pembagian
-	        	if (row_max != k){ // Elemen terbesar ada di baris selain k
-		            swap(m,row_max,k);
-		        }
-	        	
-	        	// Ubah elemen pertama baris maksimal menjadi 1 utama, bagi seluruh baris dengan elemen pertama
-	        	for (int j=0;j<m.getCol();j++) {
-	        		m.setElmt(row_max, j, (m.getElmt(row_max, j)/m.getElmt(row_max, k)));
-	        	}
-	
-		        // Kurangi tiap baris di bawah baris k
+		for (int k=0;k<m.getRow();k++) {
+		    for (int r=0; r<m.getCol(); r++) {
+		    	// Mencari nilai terbesar dari tiap baris pada kolom yang bersangkutan
+				row_max = k;
+		        max = m.getElmt(row_max, r);
 		        for (int i=k+1;i<m.getRow();i++) {
-		            factor = m.getElmt(i, k)/m.getElmt(k, k);
-		            for (int j=k;j<m.getCol();j++) {
-		            	m.setElmt(i, j, (m.getElmt(i, j)-(m.getElmt(k,j)*factor)));
+		            if(Math.abs(m.getElmt(i, r)) > max) {
+		                row_max = i;
+		                max = m.getElmt(i, r);
 		            }
 		        }
-	        }
-	    }
+		        
+		        if (max != 0) { // Jika kolom seluruhnya berisi 0, jangan lakukan pembagian maupun pertukaran baris, lanjut baris berikutnya
+		        	if (row_max != k){ // Elemen terbesar ada di baris selain k
+			            swap(m,row_max,k);
+			        }
+		        	
+		        	// Ubah elemen tidak nol pertama baris maksimal menjadi 1 utama, bagi seluruh baris dengan elemen pertama
+		        	for (int j=r;j<m.getCol();j++) {
+		        		m.setElmt(k, j, m.getElmt(k, j)/max);
+		        	}
+		
+			        // Kurangi tiap baris di bawah baris k
+			        for (int i=k+1;i<m.getRow();i++) {
+			            factor = m.getElmt(i, r)/m.getElmt(k, r);
+			            for (int j=r;j<m.getCol();j++) {
+			            	m.setElmt(i, j, (m.getElmt(i, j)-(m.getElmt(k,j)*factor)));
+			            }
+			        }
+			        break;
+//			        if (k==m.getRow()-2) {
+//			        	// Bagi elemen baris terakhir sehingga memiliki satu utama
+//			        	for (int j=k+1; j<m.getCol();j++) {
+//			        		m.setElmt(k+1, j, m.getElmt(k+1, j)/m.getElmt(k+1, k+1));
+//			        	}
+//			        }
+		        }
+		    }
+		}
 	}
 	
 	private static boolean zeroRow(Matrix m, int rowIdx, boolean SPL) {
@@ -275,15 +292,16 @@ public class Matrix {
 			}
 		}
 		equations.displayMatrix();
-		System.out.println(gaussJordan(equations));
+		System.out.println(gaussElim(equations));
 	}
 
 	public static void main(String[] args) {
-//        Matrix m = new Matrix();
-//        m.readMatrix(3, 4);
-//        forwardElimination(m);
-//        m.displayMatrix();
-		multiRegression();
+        Matrix m = new Matrix();
+        m.readMatrix(4, 5);
+        forwardElimination(m);
+        m.displayMatrix();
+        gaussElim(m);
+//		multiRegression();
 	}
 
 }
