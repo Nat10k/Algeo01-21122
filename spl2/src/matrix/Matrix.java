@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Matrix {
 	// Atribut
-	private double[][] mtrx; // Bagian matrix
+	private ArrayList<ArrayList<Double>> mtrx = new ArrayList<>(); // Bagian matrix
 	private int row,col; // Banyak baris dan kolom matrix
 	private final int IDX_UNDEF = -1;
 	
@@ -12,7 +12,6 @@ public class Matrix {
 		// Inisialisasi Matrix kosong
 		row = 0;
 		col = 0;
-		mtrx = new double[row][col];
 	}
 	
 	// Selektor
@@ -31,7 +30,7 @@ public class Matrix {
 	
 	public double getElmt(int i, int j) {
 		// Mengembalikan elemen matriks di indeks i,j, diasumsikan indeks valid
-		return this.mtrx[i][j];
+		return this.mtrx.get(i).get(j);
 	}
 	
 	public void setRow(int nRow) {
@@ -44,7 +43,7 @@ public class Matrix {
 	
 	public void setElmt(int i, int j, double val) {
 		// Mengubah elemen matriks di indeks i,j dengan nilai val, diasumsikan indeks valid
-		this.mtrx[i][j] = val;
+		this.mtrx.get(i).set(j, val);
 	}
 	
 	public void readMatrix(int nRow, int nCol) {
@@ -57,49 +56,39 @@ public class Matrix {
 	
 	public void readMatrix(int nRow, int nCol, String fileName){
 		if (fileName == null) {
-			// Membaca seluruh elemen baru matriks dari keyboard
+			// Membaca elemen matriks dari keyboard
 			Scanner input = new Scanner(System.in);
 			this.setRow(nRow);
 	        this.setCol(nCol);
-	        this.mtrx = new double[nRow][nCol];
+	        this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
 			for(int i=0; i<nRow; i++){
 				System.out.println("Baris " + (i+1));
+				this.mtrx.add(new ArrayList<>());
 	            for(int j=0; j<nCol; j++){
-	                this.setElmt(i,j,input.nextDouble());
+	            	this.mtrx.get(i).add(input.nextDouble());
 	            }
 	        }
 			input.close();
-		} else {
+		} else { // Input matriks dari file
 			try {
 				File mtrxFile = new File(fileName);
 				Scanner inputFile = new Scanner(mtrxFile);
 				
-				nRow = 0;
-				nCol = 0;
-				String firstRow = inputFile.nextLine();
-				nRow++;
-				for (int i=0; i<firstRow.length(); i++) { // Menghitung jumlah kolom matriks
-					if (firstRow.charAt(i) == ' ') {
-						nCol++;
+				this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
+				this.setRow(0);
+				this.setCol(0);
+				
+				while(inputFile.hasNextLine()) { // Mengisikan matriks
+					this.mtrx.add(new ArrayList<>());
+					Scanner elInput = new Scanner(inputFile.nextLine());
+					while(elInput.hasNextDouble()) {
+						this.mtrx.get(this.mtrx.size()-1).add(elInput.nextDouble());
 					}
-				}
-				nCol++; // Menambah kolom terakhir
-				while(inputFile.hasNextLine()) { // Menghitung jumlah baris matriks
-					++nRow;
+					elInput.close();
 				}
 				inputFile.close();
-				
-				this.setRow(nRow);
-				this.setCol(nCol);
-				this.mtrx = new double[nRow][nCol];
-				
-				inputFile = new Scanner(mtrxFile);
-				for(int i=0; i<nRow; i++){
-					for (int j=0; j<nCol;j++) {
-						this.setElmt(i, j, inputFile.nextDouble());
-					}
-		        }
-				inputFile.close();
+				this.setRow(this.mtrx.size());
+				this.setCol(this.mtrx.get(0).size());
 			}
 			catch (FileNotFoundException e) {
 				System.out.println("File is not found");
@@ -121,8 +110,7 @@ public class Matrix {
     }
     
     public static double[] gaussElim (Matrix m){
-    	// Fungsi eliminasi Gauss Jordan, m berbentuk matrix augmented
-        double t;
+    	// Fungsi eliminasi Gauss Jordan, m matrix augmented
         boolean noSolution, manySolution;
         int firstNonZero = -1;
 //        for(j=0; j<m.getCol(); j++){
@@ -204,7 +192,6 @@ public class Matrix {
                 for (int i = m.getCol()-2; i>=0; i--) {
                 	if (i == m.getCol()-2) {
                 		a[i] += m.getElmt(i, m.getCol()-1); 
-                		System.out.println("x" + (i+1) + " = " + a[i]);
                 	}
                 	else {
                 		for (int j=i+1; j<m.getCol(); j++) {
@@ -214,9 +201,11 @@ public class Matrix {
                 				a[i] -= m.getElmt(i, j) * (double) a[j];
                 			}
                 		}
-                		System.out.println("x" + (i+1) + " = " + a[i]);
                 	}
-                		
+                	if (Math.abs(a[i]) < 1E-10) {
+                		a[i] = 0;
+                	}
+                	System.out.println("x" + (i+1) + " = " + a[i]);
                 }
         	}
         }
@@ -244,7 +233,6 @@ public class Matrix {
         Matrix m = new Matrix();
         m.setRow(n);
         m.setCol(n+1);
-        m.mtrx = new double[n][n+1];
         double[]a = new double[n];
         for (int i = 0; i<n; i++){
             m.setElmt(i,0,1);
@@ -317,7 +305,7 @@ public class Matrix {
 			        	factor = m.getElmt(i, r)/m.getElmt(k, r);
 			            for (int j=r;j<m.getCol();j++) {
 			            	m.setElmt(i, j, (m.getElmt(i, j)-(m.getElmt(k,j)*factor)));
-			            	if (Math.abs(m.getElmt(i, j)) < 1E-15) {
+			            	if (Math.abs(m.getElmt(i, j)) < 1E-10) {
 			            		m.setElmt(i, j, 0);
 			            	}
 			            }
@@ -370,53 +358,82 @@ public class Matrix {
 		// Menerima banyak variabel dan jumlah sample
 		int n,m;
 		double sum;
+		double[] target;
+		boolean fromFile;
+		Matrix data = new Matrix();
 		
 		Scanner input = new Scanner(System.in);
-		System.out.println("Masukkan banyak peubah x");
-		n = input.nextInt();
-		System.out.println("Masukkan banyak sample");
-		m = input.nextInt();
-		
-		// Menerima masukan data
-		Matrix data = new Matrix();
-		System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
-		data.readMatrix(m, n+1);
+		System.out.println("Masukan dari file ?");
+		fromFile = input.nextBoolean();
+		if (fromFile) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
+			String fileName = input.next();
+			data.readMatrix(fileName);
+			
+			// Mengisi array penampung elemen yang ingin dicari
+			target = new double[data.getCol()-1];
+			for (int j=0; j<data.getCol()-1; j++) { 
+				target[j] = data.getElmt(data.getRow()-1, j);
+			}
+			data.mtrx.get(data.getRow()-1).clear();
+			data.row--;
+		} 
+		else { // Menerima masukan data dari keyboard
+			System.out.println("Masukkan banyak peubah x");
+			n = input.nextInt();
+			System.out.println("Masukkan banyak sample");
+			m = input.nextInt();
+			
+			// Menerima masukan data
+			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
+			data.readMatrix(m, n+1);
+			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
+			target = new double[n];
+			for (int i = 0; i<n; i++) {
+				target[i] = input.nextDouble();
+			}
+		}
+		input.close();
 		
 		// Membuat matriks SPL regresi
 		Matrix equations = new Matrix();
-		equations.setRow(n+1);
-		equations.setCol(n+2);
-		equations.mtrx = new double[n+1][n+2];
+		equations.setRow(data.getCol()+1);
+		equations.setCol(data.getCol()+2);
 		for (int i=0; i<equations.getRow();i++) {
+			equations.mtrx.add(new ArrayList<>());
 			for (int j=0; j<equations.getCol();j++) {
 				if (i == 0 && j == 0) { // Koefisien B0 pertama
-					equations.setElmt(i, j, m);
+					equations.mtrx.get(i).add(j, (double) data.getRow());
 				} 
 				else if (i==0) { // SPL baris pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,j-1);
 					}
-					equations.setElmt(i, j, sum);
+					equations.mtrx.get(i).add(j, sum);
 				}
 				else if (j==0) { // SPL kolom pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,i-1);
 					}
-					equations.setElmt(i, j, sum);
+					equations.mtrx.get(i).add(j, sum);
 				}
 				else {
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k, i-1) * data.getElmt(k,j-1);
 					}
-					equations.setElmt(i, j, sum);
+					equations.mtrx.get(i).add(j, sum);
 				}
 			}
 		}
 		equations.displayMatrix();
-		System.out.println(gaussElim(equations));
+		double[] result = gaussElim(equations);
+		String persamaan = "y = ";
+		for (int i=0; i<result.length; i++) {
+			persamaan += result[i] + "x" + (i+1) + " + ";
+		}
+		System.out.println(persamaan);
 	}
 
 	public static void main(String[] args) {
@@ -432,13 +449,13 @@ public class Matrix {
 //		    e.printStackTrace();
 //		}
 		
-        Matrix m = new Matrix();
-        m.readMatrix(4,5);
-        m.displayMatrix();
-        forwardElimination(m);
-        m.displayMatrix();
-        gaussElim(m);
-//		multiRegression();
+//        Matrix m = new Matrix();
+//        m.readMatrix("test.txt");
+//        m.displayMatrix();
+//        forwardElimination(m);
+//        m.displayMatrix();
+//        gaussElim(m);
+		multiRegression();
 	}
 
 }
