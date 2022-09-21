@@ -1,5 +1,6 @@
 package matrix;
 import java.util.*;
+import java.io.*;
 
 public class Matrix {
 	// Atribut
@@ -46,19 +47,67 @@ public class Matrix {
 		this.mtrx[i][j] = val;
 	}
 	
-	public void readMatrix(int nRow, int nCol){
-		// Membaca seluruh elemen baru matriks
-        this.setRow(nRow);
-        this.setCol(nCol);
-        this.mtrx = new double[nRow][nCol];
-        Scanner input = new Scanner(System.in);
-		for(int i=0; i<nRow; i++){
-			System.out.println("Baris " + (i+1));
-            for(int j=0; j<nCol; j++){
-                this.setElmt(i,j,input.nextDouble());
-            }
-        }
-		input.close();
+	public void readMatrix(int nRow, int nCol) {
+		readMatrix(nRow, nCol, null);
+	}
+	
+	public void readMatrix(String fileName) {
+		readMatrix(-1,-1, fileName);
+	}
+	
+	public void readMatrix(int nRow, int nCol, String fileName){
+		if (fileName == null) {
+			// Membaca seluruh elemen baru matriks dari keyboard
+			Scanner input = new Scanner(System.in);
+			this.setRow(nRow);
+	        this.setCol(nCol);
+	        this.mtrx = new double[nRow][nCol];
+			for(int i=0; i<nRow; i++){
+				System.out.println("Baris " + (i+1));
+	            for(int j=0; j<nCol; j++){
+	                this.setElmt(i,j,input.nextDouble());
+	            }
+	        }
+			input.close();
+		} else {
+			try {
+				File mtrxFile = new File(fileName);
+				Scanner inputFile = new Scanner(mtrxFile);
+				
+				nRow = 0;
+				nCol = 0;
+				String firstRow = inputFile.nextLine();
+				nRow++;
+				for (int i=0; i<firstRow.length(); i++) { // Menghitung jumlah kolom matriks
+					if (firstRow.charAt(i) == ' ') {
+						nCol++;
+					}
+				}
+				nCol++; // Menambah kolom terakhir
+				while(inputFile.hasNextLine()) { // Menghitung jumlah baris matriks
+					++nRow;
+				}
+				inputFile.close();
+				
+				this.setRow(nRow);
+				this.setCol(nCol);
+				this.mtrx = new double[nRow][nCol];
+				
+				inputFile = new Scanner(mtrxFile);
+				for(int i=0; i<nRow; i++){
+					for (int j=0; j<nCol;j++) {
+						this.setElmt(i, j, inputFile.nextDouble());
+					}
+		        }
+				inputFile.close();
+			}
+			catch (FileNotFoundException e) {
+				System.out.println("File is not found");
+			    e.printStackTrace();
+			}
+				
+		}
+			
     }
 	
     public void displayMatrix(){
@@ -73,8 +122,9 @@ public class Matrix {
     
     public static double[] gaussElim (Matrix m){
     	// Fungsi eliminasi Gauss Jordan, m berbentuk matrix augmented
-        int i,j,k;
         double t;
+        boolean noSolution, manySolution;
+        int firstNonZero = -1;
 //        for(j=0; j<m.getCol(); j++){
 //            for(i=0; i<m.getRow(); i++)
 //            {
@@ -88,19 +138,88 @@ public class Matrix {
 //                }
 //            }
 //        }
-        
+        // Membuat matriks segitiga atas
         forwardElimination(m);
-        double[] a = new double[m.getRow()];
         
-        // Inisialisasi array penampung hasil
-        for(i=0; i < m.getRow(); i++) 
-        {
-            a[i]=0;
+        // Array penampung hasil
+        double[] a = new double[m.getCol()-1];
+        
+        // Memeriksa ada/tidak adanya baris matriks yang hanya terdiri dari 0
+        noSolution = false;
+        manySolution = false;
+        for (int i=0; i<m.getRow();i++) {
+        	if (zeroRow(m,i,true) && m.getElmt(i, m.getCol()-1) != 0) {
+        		noSolution = true;
+        		break;
+        	}
+        	else if (zeroRow(m,i,true) && m.getElmt(i, m.getCol()-1) == 0 || m.getCol() != m.getRow()+1) {
+        		manySolution = true;
+        	}
         }
         
-        // Backwards substitution
-        for (i = m.getRow()-1; i>=0; i++) {
-        	a[i] = m.getElmt(i, m.getCol()-1); 
+        if (noSolution) { // SPL tidak memiliki solusi
+        	System.out.println("SPL tidak memiliki solusi");
+        }
+        else {
+        	// Inisialisasi array penampung hasil
+        	for(int i=0; i < m.getRow(); i++){
+                a[i]=0;
+            }
+        	
+        	if (manySolution) { // SPL memiliki banyak solusi
+        		String hasil;
+        		for (int i=m.getRow()-1; i>=0;i--) {
+        			if(!zeroRow(m,i,true)) {
+        				// Cari elemen non-0 pertama pada baris
+        				for (int j=0; j<m.getCol()-1; j++) {
+        					if(m.getElmt(i, j) != 0) {
+        						firstNonZero = j;
+        						break;
+        					}
+        				}
+        				
+        				a[firstNonZero] = 1;
+        				hasil = "";
+        				// Mencetak persamaan parametrik
+        				for (int j=firstNonZero+1; j<m.getCol(); j++) {
+        				    hasil += "x"+(firstNonZero+1) + " = ";
+        					if (j==m.getCol()-1) {
+        						hasil += m.getElmt(i, j);
+        					}
+        					else if (m.getElmt(i, j) != 0){
+        						hasil += (-1)*m.getElmt(i, j) + "x" + (j+1) + " + "; 
+        					}
+        				}
+        				System.out.println(hasil);
+        			}
+        		}
+        		
+        		for (int i=0; i<m.getRow();i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
+        			if(a[i] == 0) {
+        				System.out.println("x"+(i+1)+" = bilangan real");
+        			}
+        		}
+        	}
+        	else { // SPL memiliki solusi unik
+        		// Backwards substitution
+                for (int i = m.getRow()-1; i>=0; i--) {
+                	if (i == m.getRow()-1) {
+                		a[i] += m.getElmt(i, m.getCol()-1); 
+                		System.out.println("x" + (i+1) + " = " + a[i]);
+                	}
+                	else {
+                		for (int j=i+1; j<m.getCol(); j++) {
+                			if (j == m.getCol()-1) {
+                				a[i] += m.getElmt(i, j);
+                			} else {
+                				a[i] -= m.getElmt(i, j) * (double) a[j];
+                			}
+                		}
+                		System.out.println("x" + (i+1) + " = " + a[i]);
+                	}
+                		
+                }
+        	}
         }
         return a;
     }
@@ -172,8 +291,8 @@ public class Matrix {
 		int row_max;
 		double max, factor;
 		
-		for (int k=0;k<m.getRow();k++) {
-		    for (int r=0; r<m.getCol(); r++) {
+		for (int k=0;k<m.getRow()-1;k++) {
+		    for (int r=k; r<m.getCol(); r++) {
 		    	// Mencari nilai terbesar dari tiap baris pada kolom yang bersangkutan
 				row_max = k;
 		        max = m.getElmt(row_max, r);
@@ -196,21 +315,24 @@ public class Matrix {
 		
 			        // Kurangi tiap baris di bawah baris k
 			        for (int i=k+1;i<m.getRow();i++) {
-			            factor = m.getElmt(i, r)/m.getElmt(k, r);
+			        	factor = m.getElmt(i, r)/m.getElmt(k, r);
 			            for (int j=r;j<m.getCol();j++) {
 			            	m.setElmt(i, j, (m.getElmt(i, j)-(m.getElmt(k,j)*factor)));
 			            }
 			        }
 			        break;
-//			        if (k==m.getRow()-2) {
-//			        	// Bagi elemen baris terakhir sehingga memiliki satu utama
-//			        	for (int j=k+1; j<m.getCol();j++) {
-//			        		m.setElmt(k+1, j, m.getElmt(k+1, j)/m.getElmt(k+1, k+1));
-//			        	}
-//			        }
 		        }
 		    }
 		}
+		// Bagi baris terakhir menjadi memiliki 1 utama
+//		for (int j=0;j<m.getCol();j++) {
+//			if (m.getElmt(m.getRow()-1, j) != 0) {
+//				for (int k=j;k<m.getCol();k++) {
+//					m.setElmt(m.getRow()-1, k, (m.getElmt(m.getRow()-1, k)/m.getElmt(m.getRow()-1, j)));
+//				}
+//				break;
+//			}
+//		}
 	}
 	
 	private static boolean zeroRow(Matrix m, int rowIdx, boolean SPL) {
@@ -296,11 +418,26 @@ public class Matrix {
 	}
 
 	public static void main(String[] args) {
-        Matrix m = new Matrix();
-        m.readMatrix(4, 5);
-        forwardElimination(m);
-        m.displayMatrix();
-        gaussElim(m);
+		String test;
+		File testFile = new File("test.txt");
+		try {
+			Scanner stringTest = new Scanner(testFile);
+			test = stringTest.nextLine();
+			System.out.print(test);
+		}
+		catch (FileNotFoundException e) {
+			System.out.println("File is not found");
+		    e.printStackTrace();
+		}
+		
+		
+				
+//        Matrix m = new Matrix();
+//        m.readMatrix("test.txt");
+//        m.displayMatrix();
+//        forwardElimination(m);
+//        m.displayMatrix();
+//        gaussElim(m);
 //		multiRegression();
 	}
 

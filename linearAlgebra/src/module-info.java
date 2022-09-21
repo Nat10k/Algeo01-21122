@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author Nathan
+ *
+ */
+module linearAlgebra {
+}
