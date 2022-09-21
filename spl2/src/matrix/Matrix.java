@@ -162,7 +162,7 @@ public class Matrix {
         }
         else {
         	// Inisialisasi array penampung hasil
-        	for(int i=0; i < m.getRow(); i++){
+        	for(int i=0; i < m.getCol()-1; i++){
                 a[i]=0;
             }
         	
@@ -179,10 +179,9 @@ public class Matrix {
         				}
         				
         				a[firstNonZero] = 1;
-        				hasil = "";
+        				hasil = "x"+(firstNonZero+1) + " = ";
         				// Mencetak persamaan parametrik
         				for (int j=firstNonZero+1; j<m.getCol(); j++) {
-        				    hasil += "x"+(firstNonZero+1) + " = ";
         					if (j==m.getCol()-1) {
         						hasil += m.getElmt(i, j);
         					}
@@ -194,7 +193,7 @@ public class Matrix {
         			}
         		}
         		
-        		for (int i=0; i<m.getRow();i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
+        		for (int i=0; i<m.getCol()-1;i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
         			if(a[i] == 0) {
         				System.out.println("x"+(i+1)+" = bilangan real");
         			}
@@ -202,8 +201,8 @@ public class Matrix {
         	}
         	else { // SPL memiliki solusi unik
         		// Backwards substitution
-                for (int i = m.getRow()-1; i>=0; i--) {
-                	if (i == m.getRow()-1) {
+                for (int i = m.getCol()-2; i>=0; i--) {
+                	if (i == m.getCol()-2) {
                 		a[i] += m.getElmt(i, m.getCol()-1); 
                 		System.out.println("x" + (i+1) + " = " + a[i]);
                 	}
@@ -291,9 +290,9 @@ public class Matrix {
 		int row_max;
 		double max, factor;
 		
-		for (int k=0;k<m.getRow()-1;k++) {
-		    for (int r=k; r<m.getCol(); r++) {
-		    	// Mencari nilai terbesar dari tiap baris pada kolom yang bersangkutan
+		for (int k=0;k<m.getRow();k++) {
+		    for (int r=k; r<m.getCol()-1; r++) {
+		    	// Mencari nilai terbesar dari tiap baris pada kolom koefisien yang bersangkutan
 				row_max = k;
 		        max = m.getElmt(row_max, r);
 		        for (int i=k+1;i<m.getRow();i++) {
@@ -318,13 +317,16 @@ public class Matrix {
 			        	factor = m.getElmt(i, r)/m.getElmt(k, r);
 			            for (int j=r;j<m.getCol();j++) {
 			            	m.setElmt(i, j, (m.getElmt(i, j)-(m.getElmt(k,j)*factor)));
+			            	if (Math.abs(m.getElmt(i, j)) < 1E-15) {
+			            		m.setElmt(i, j, 0);
+			            	}
 			            }
 			        }
 			        break;
 		        }
 		    }
 		}
-		// Bagi baris terakhir menjadi memiliki 1 utama
+//		// Bagi baris terakhir menjadi memiliki 1 utama
 //		for (int j=0;j<m.getCol();j++) {
 //			if (m.getElmt(m.getRow()-1, j) != 0) {
 //				for (int k=j;k<m.getCol();k++) {
@@ -418,26 +420,24 @@ public class Matrix {
 	}
 
 	public static void main(String[] args) {
-		String test;
-		File testFile = new File("test.txt");
-		try {
-			Scanner stringTest = new Scanner(testFile);
-			test = stringTest.nextLine();
-			System.out.print(test);
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("File is not found");
-		    e.printStackTrace();
-		}
+//		String test;
+//		File testFile = new File("test.txt");
+//		try {
+//			Scanner stringTest = new Scanner(testFile);
+//			test = stringTest.nextLine();
+//			System.out.print(test);
+//		}
+//		catch (FileNotFoundException e) {
+//			System.out.println("File is not found");
+//		    e.printStackTrace();
+//		}
 		
-		
-				
-//        Matrix m = new Matrix();
-//        m.readMatrix("test.txt");
-//        m.displayMatrix();
-//        forwardElimination(m);
-//        m.displayMatrix();
-//        gaussElim(m);
+        Matrix m = new Matrix();
+        m.readMatrix(4,5);
+        m.displayMatrix();
+        forwardElimination(m);
+        m.displayMatrix();
+        gaussElim(m);
 //		multiRegression();
 	}
 
