@@ -357,7 +357,7 @@ public class Matrix {
 		
 		// Menerima banyak variabel dan jumlah sample
 		int n,m;
-		double sum;
+		double sum, hasilK;
 		double[] target;
 		boolean fromFile;
 		Matrix data = new Matrix();
@@ -366,6 +366,7 @@ public class Matrix {
 		System.out.println("Masukan dari file ?");
 		fromFile = input.nextBoolean();
 		if (fromFile) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
+			System.out.println("Masukkan nama file");
 			String fileName = input.next();
 			data.readMatrix(fileName);
 			
@@ -396,9 +397,10 @@ public class Matrix {
 		
 		// Membuat matriks SPL regresi
 		Matrix equations = new Matrix();
-		equations.setRow(data.getCol()+1);
-		equations.setCol(data.getCol()+2);
-		for (int i=0; i<equations.getRow();i++) {
+		equations.setRow(data.getCol());
+		equations.setCol(data.getCol()+1);
+		
+		for (int i=0;i<equations.getRow();i++) {
 			equations.mtrx.add(new ArrayList<>());
 			for (int j=0; j<equations.getCol();j++) {
 				if (i == 0 && j == 0) { // Koefisien B0 pertama
@@ -429,11 +431,17 @@ public class Matrix {
 		}
 		equations.displayMatrix();
 		double[] result = gaussElim(equations);
-		String persamaan = "y = ";
-		for (int i=0; i<result.length; i++) {
-			persamaan += result[i] + "x" + (i+1) + " + ";
+		String persamaan = "y = " + result[0] + " + ";
+		for (int i=1; i<result.length-1; i++) {
+			persamaan += result[i] + "x" + i + " + ";
 		}
-		System.out.println(persamaan);
+		persamaan += result[result.length-1] + "x" + (result.length-1);
+		System.out.println("Persamaan regresi : " + persamaan);
+		hasilK = result[0];
+		for (int i=0;i<target.length;i++) {
+			hasilK += target[i]*result[i+1];
+		}
+		System.out.println("yk = " + hasilK);
 	}
 
 	public static void main(String[] args) {
