@@ -2,6 +2,7 @@ package matrix;
 import java.util.*;
 import java.io.*;
 
+
 public class Matrix {
 	// Atribut
 	private ArrayList<ArrayList<Double>> mtrx = new ArrayList<>(); // Bagian matrix
@@ -15,11 +16,6 @@ public class Matrix {
 	}
 	
 	// Selektor
-	public static boolean isIdxValid(Matrix m, int i, int j) {
-		// Menentukan apakah indeks i,j valid untuk matriks
-		return (i >= 0 && i < m.row && j >= 0 && j < m.col);
-	}
-	
 	public int getRow() {
 		return this.row;
 	}
@@ -46,6 +42,16 @@ public class Matrix {
 		this.mtrx.get(i).set(j, val);
 	}
 	
+	public void addRow() {
+		// Menambahkan baris baru ke matrix
+		this.mtrx.add(new ArrayList <>());
+	}
+	
+	public void addElmt(int i, double val) {
+		// Menambahkan kolom baru beserta elemennya ke baris i
+		this.mtrx.get(i).add(val);
+	}
+	
 	public void readMatrix(int nRow, int nCol) {
 		readMatrix(nRow, nCol, null);
 	}
@@ -63,9 +69,9 @@ public class Matrix {
 	        this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
 			for(int i=0; i<nRow; i++){
 				System.out.println("Baris " + (i+1));
-				this.mtrx.add(new ArrayList<>());
+				this.addRow();
 	            for(int j=0; j<nCol; j++){
-	            	this.mtrx.get(i).add(input.nextDouble());
+	            	this.addElmt(i,input.nextDouble());
 	            }
 	        }
 			input.close();
@@ -79,7 +85,7 @@ public class Matrix {
 				this.setCol(0);
 				
 				while(inputFile.hasNextLine()) { // Mengisikan matriks
-					this.mtrx.add(new ArrayList<>());
+					this.addRow();
 					Scanner elInput = new Scanner(inputFile.nextLine());
 					while(elInput.hasNextDouble()) {
 						this.mtrx.get(this.mtrx.size()-1).add(elInput.nextDouble());
@@ -109,7 +115,145 @@ public class Matrix {
         }
     }
     
-    public static double[] gaussElim (Matrix m){
+    private static Matrix multiplyMatrix(Matrix m1, Matrix m2) {
+    	// Menghasilkan matriks hasil perkalian m1 dengan m2, diasumsikan m1.getCol() = m2.getRow()
+    	Matrix result = new Matrix();
+    	double sum;
+    	
+    	// Melakukan perkalian matriks
+    	for(int i=0;i<m1.getRow();i++) {
+    		result.addRow();
+    		result.row++;
+            for(int j=0;j<m2.getCol();j++) {
+                sum = 0;
+                for(int k=0;k<m1.getCol();k++) {
+                	sum += m1.getElmt(i, k) * m2.getElmt(k, j);
+                }
+                result.addElmt(i,sum);
+                if (i == 0) {
+                	result.col++;
+                }
+            }
+        }
+    	return result;
+    }
+    
+    public static double determinant(Matrix m) {
+    	// Menghasilkan determinan matriks, diasumsikan m adalah matriks persegi
+        Matrix minor;
+        int row_cof;
+        int sign;
+        double det;
+
+        /* ALGORITMA */
+        // Mencari determinan dengan metode kofaktor secara rekursif
+        if (m.getRow() == 1) { // Jika matriks hanya memiliki 1 elemen
+            det = m.getElmt(0, 0);
+        }
+        else if (m.getRow()==2) { // Jika matriks ukuran 2x2
+            det = (m.getElmt(0, 0)*m.getElmt(1, 1))-(m.getElmt(1, 0)*m.getElmt(0, 1));
+        } else {
+            sign = 1;
+            det = 0;
+            
+            // Dipakai patokan baris pertama
+            for(int k=0; k<m.getCol(); k++) {
+                // Membuat matriks minor
+            	// Inisialisasi ukuran matriks minor
+            	minor = new Matrix();
+                minor.setRow(m.getRow()-1);
+                minor.setCol(m.getCol()-1);
+                row_cof = 0;
+                for (int i=1; i<m.getRow(); i++) {
+                	minor.addRow();
+                    for (int j=0; j<m.getCol(); j++) {
+                        if (j != k) {
+                            minor.addElmt(row_cof, m.getElmt(i,j));
+                        }
+                    }
+                    row_cof++;
+                }
+                // Menghitung determinan
+                det += sign*m.getElmt(0, k)*determinant(minor);
+                sign *= -1;
+            }
+        }
+        return det;
+    }
+    
+    public static Matrix transpose(Matrix m) {
+    	// Menghasillkan matrix transpose matrix m
+    	Matrix mTrans = new Matrix();
+    	mTrans.setRow(m.getCol());
+    	mTrans.setCol(m.getRow());
+    	for(int i=0;i<mTrans.getRow();i++) {
+    		mTrans.addRow();
+            for(int j=0;j<mTrans.getCol();j++) {
+                mTrans.addElmt(i, m.getElmt(j, i));
+            }
+        }
+    	return mTrans;
+    }
+    
+    public static Matrix inverse(Matrix m) {
+    	// Menghasilkan invers Matrix m, diasumsikan matriks m matriks persegi
+    	
+    	if (determinant(m) == 0) {
+    		System.out.println("Matriks tidak memiliki inverse");
+    		return null;
+    	}
+    	else {
+	    	Matrix cofactor = new Matrix();
+	    	Matrix adjoint = new Matrix();
+	    	double detM = determinant(m);
+	    	
+	    	// Inisialisasi ukuran matrix cofactor dan adjoint
+	    	cofactor.setRow(m.getRow());
+	    	cofactor.setCol(m.getCol());
+	    	adjoint.setRow(m.getRow());
+	    	adjoint.setCol(m.getCol());
+	    	
+	    	// Membuat Matrix cofactor dari Matrix m
+	    	for (int i=0; i<m.getRow(); i++) {
+	    		cofactor.addRow();
+	    		for (int j=0; j<m.getCol(); j++) {
+	    			// Membuat matrix minor
+	        		Matrix minor = new Matrix();
+	        		minor.setRow(m.getRow()-1);
+	        		minor.setCol(m.getCol()-1);
+	        		int row_minor = 0;
+	        		for (int r=0; r<minor.getRow(); r++) {
+	        			minor.addRow();
+	        		}
+	    			for (int k=0; k<m.getRow();k++) {
+	    				boolean addedElmt = false;
+	    				for (int l=0; l<m.getCol(); l++) {
+	    					if (k != i && l != j) {
+	    						minor.addElmt(row_minor, m.getElmt(k, l));
+	    						addedElmt = true;
+	    					}
+	    				}
+	    				if (addedElmt) {
+	    					row_minor++;
+	    				}
+	    			}
+	    			// Menambahkan elemen matriks kofaktor Cij
+	    			cofactor.addElmt(i, determinant(minor)*pangkat(-1,i+j));
+	    		}
+	    	}
+	    	adjoint = transpose(cofactor);
+	    	for (int i=0; i<adjoint.getRow(); i++) {
+	    		for (int j=0; j<adjoint.getCol(); j++) {
+	    			adjoint.setElmt(i, j, adjoint.getElmt(i, j)/detM);
+	    		}
+	    	}
+	    	adjoint.displayMatrix();
+	    	return adjoint;
+	    }
+    	
+    }
+    
+    public static double[] gaussElim (Matrix m, boolean SPL){
     	// Fungsi eliminasi Gauss Jordan, m matrix augmented
         boolean noSolution, manySolution;
         int firstNonZero = -1;
@@ -205,7 +349,9 @@ public class Matrix {
                 	if (Math.abs(a[i]) < 1E-10) {
                 		a[i] = 0;
                 	}
-                	System.out.println("x" + (i+1) + " = " + a[i]);
+                	if (SPL) {
+                		System.out.println("x" + (i+1) + " = " + a[i]);
+                	}
                 }
         	}
         }
@@ -249,7 +395,7 @@ public class Matrix {
             m.setElmt(i, n, input.nextDouble());
         }
         m.displayMatrix();
-        a = gaussElim(m);
+        a = gaussElim(m, false);
         y = a[0];
         for (int i=1; i<n; i++){
             y += a[i]*pangkat(x, i);
@@ -401,47 +547,141 @@ public class Matrix {
 		equations.setCol(data.getCol()+1);
 		
 		for (int i=0;i<equations.getRow();i++) {
-			equations.mtrx.add(new ArrayList<>());
+			equations.addRow();
 			for (int j=0; j<equations.getCol();j++) {
 				if (i == 0 && j == 0) { // Koefisien B0 pertama
-					equations.mtrx.get(i).add(j, (double) data.getRow());
+					equations.addElmt(i, (double) data.getRow());
 				} 
 				else if (i==0) { // SPL baris pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,j-1);
 					}
-					equations.mtrx.get(i).add(j, sum);
+					equations.addElmt(i,sum);
 				}
 				else if (j==0) { // SPL kolom pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,i-1);
 					}
-					equations.mtrx.get(i).add(j, sum);
+					equations.addElmt(i,sum);
 				}
 				else {
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k, i-1) * data.getElmt(k,j-1);
 					}
-					equations.mtrx.get(i).add(j, sum);
+					equations.addElmt(i,sum);
 				}
 			}
 		}
+		System.out.println("SPL dari Normal Estimation Equation for Multiple Linear Regression");
 		equations.displayMatrix();
-		double[] result = gaussElim(equations);
-		String persamaan = "y = " + result[0] + " + ";
+		
+		// Mencetak persamaan hasil
+		double[] result = gaussElim(equations, false);
+		String persamaan = "y = " + result[0];
 		for (int i=1; i<result.length-1; i++) {
-			persamaan += result[i] + "x" + i + " + ";
+			if (result[i] > 0) {
+				persamaan += " + ";
+			}
+			else {
+				persamaan += " - ";
+			}
+			persamaan += Math.abs(result[i]) + "x" + i;
 		}
-		persamaan += result[result.length-1] + "x" + (result.length-1);
+		if (result[result.length-1] > 0) {
+			persamaan += " + ";
+		}
+		else {
+			persamaan += " - ";
+		}
+		persamaan += Math.abs(result[result.length-1]) + "x" + (result.length-1);
 		System.out.println("Persamaan regresi : " + persamaan);
 		hasilK = result[0];
 		for (int i=0;i<target.length;i++) {
 			hasilK += target[i]*result[i+1];
 		}
 		System.out.println("yk = " + hasilK);
+	}
+	
+	public static void bicubic() {
+		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4
+		int x,y,pangkatX,pangkatY; // x = integer [-1..2], y = integer [-1..2], pangkatX = integer [0..3], pangkatY = integer [0..3]
+		Matrix xMat = new Matrix(); // Matriks koefisien X
+		Matrix inputMtrx = new Matrix(); // Array nilai f(i,j), i = integer[-1..2], j = integer[-1..2]
+		Matrix nilaiF = new Matrix();
+		double[] nilaiAB = new double[2]; // Array penampung nilai A,B yang ingin dicari hasil f(A,B) nya
+		Matrix arrayA = new Matrix(); // Array penampung nilai aij
+		String fileName;
+		Scanner input = new Scanner(System.in);
+		
+		// Menerima nama file dan membaca array inputMtrx dari file
+		System.out.println("Masukkan nama file");
+		fileName = input.next();
+		inputMtrx.readMatrix(fileName);
+		input.close();
+		
+		// Menyimpan nilai a,b yang ingin dicari ke array nilaiAB
+		for (int i=0; i<nilaiAB.length; i++) {
+			nilaiAB[i] = inputMtrx.getElmt(inputMtrx.getRow()-1, i);
+		}
+		inputMtrx.mtrx.get(inputMtrx.getRow()-1).clear();
+		inputMtrx.row--;
+		
+		// Memasukkan nilai f(x,y) dari inputMtrx ke matrix nilaiF 
+		while (nilaiF.row < 16) {
+			nilaiF.addRow();
+			nilaiF.row++;
+		}
+		System.out.println(nilaiF.getRow());
+		nilaiF.setCol(1);
+		int newRowNilaiF = 0;
+		for (int i=0; i<4; i++) {
+			for (int j=0; j<4; j++) {
+				nilaiF.addElmt(newRowNilaiF, inputMtrx.getElmt(i, j));
+				newRowNilaiF++;
+			}
+		}
+		
+		
+		// Inisialisasi matrix X
+		xMat.setRow(16);
+		xMat.setCol(16);
+		// Inisialisasi nilai x dan y 
+		x = -1;
+		y = -1;
+		// Mengisi matriks koefisien x
+		for (int i=0; i<xMat.getRow(); i++) {
+			xMat.addRow();
+			pangkatX = 0;
+			pangkatY = 0;
+			for (int j=0; j<xMat.getCol(); j++) {
+				xMat.addElmt(i,pangkat(x,(pangkatX))*pangkat(y,(pangkatY)));
+				if (pangkatX == 3) {
+					pangkatX = 0;
+					pangkatY++;
+				} else {
+					pangkatX++;
+				}
+			}
+			// Ubah nilai x
+			if (x == 2) {
+				x = -1;
+			} else {
+				x++;
+			}
+			// Ubah nilai y
+			if (i % 4 == 3) { // Sudah baris kelipatan 4
+				y++;
+			}
+		}
+		xMat.displayMatrix();
+		
+		// Mengisi matriks hasil a dari hasil perkalian matrix X dengan matrix inputMtrx
+//		inverse(xMat).displayMatrix();
+//		arrayA = multiplyMatrix(inverse(xMat),nilaiF);
+//		arrayA.displayMatrix();
 	}
 
 	public static void main(String[] args) {
@@ -458,12 +698,24 @@ public class Matrix {
 //		}
 		
 //        Matrix m = new Matrix();
-//        m.readMatrix("test.txt");
+//        Matrix m2 = new Matrix();
+//        m.readMatrix("testMultiply.txt");
+//        m2.readMatrix("testMultiply.txt");
+//        multiplyMatrix(m,m2).displayMatrix();
+		
 //        m.displayMatrix();
 //        forwardElimination(m);
 //        m.displayMatrix();
-//        gaussElim(m);
-		multiRegression();
+//        gaussElim(m, true);
+//		multiRegression();
+		
+		bicubic();
+//		Matrix m = new Matrix();
+//		m.readMatrix("test.txt");
+//		m.displayMatrix();
+//		determinant(m);
+//		transpose(m);
+//		inverse(m);
 	}
 
 }
