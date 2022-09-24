@@ -1,9 +1,0 @@
-/**
- * 
- */
-/**
- * @author linal
- *
- */
-module SPL {
-}
