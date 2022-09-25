@@ -2,8 +2,6 @@ package linearAlgebra;
 
 import java.util.Scanner;
 
-import matrix.Matrix;
-
 public class Bicubic {
 	public static void bicubic() {
 		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4

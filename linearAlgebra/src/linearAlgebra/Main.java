@@ -1,6 +1,4 @@
 package linearAlgebra;
-import matrix.*;
-import spl.*;
 
 public class Main {
 
@@ -37,13 +35,13 @@ public class Main {
 		// Uji coba
 //	    Matrix m = new Matrix();
 //	    Matrix m2 = new Matrix();
-//	    m.readMatrix("./test/test.txt");
+//	    m.readMatrix(4,5);
 //	    m2.readMatrix("./test/testMultiply.txt");
 //	    Matrix.multiplyMatrix(m,m2).displayMatrix();
 		
 //	    m.displayMatrix();
-//	    GaussElimination.gaussElim(m, true);
-		MultiLinearRegression.multiRegression();
+	    GaussElimination.gaussElim();
+//		MultiLinearRegression.multiRegression();
 		
 //		bicubic();
 //		Matrix m = new Matrix();

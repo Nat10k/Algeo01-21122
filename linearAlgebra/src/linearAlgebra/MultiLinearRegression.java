@@ -1,8 +1,6 @@
 package linearAlgebra;
 
 import java.util.Scanner;
-import spl.*;
-import matrix.Matrix;
 
 public class MultiLinearRegression {
 	public static void multiRegression() {
@@ -12,7 +10,7 @@ public class MultiLinearRegression {
 		int n,m;
 		double sum, hasilK;
 		double[] target;
-		boolean fromFile;
+		boolean fromFile, isResultZero;
 		Matrix data = new Matrix();
 		
 		Scanner input = new Scanner(System.in);
@@ -38,13 +36,13 @@ public class MultiLinearRegression {
 			m = input.nextInt();
 			
 			// Menerima masukan data
-			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
-			data.readMatrix(m, n+1);
-			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
 			target = new double[n];
+			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
 			for (int i = 0; i<n; i++) {
 				target[i] = input.nextDouble();
 			}
+			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
+			data.readMatrix(m, n+1);
 		}
 		input.close();
 		
@@ -86,29 +84,39 @@ public class MultiLinearRegression {
 		equations.displayMatrix();
 		
 		// Mencetak persamaan hasil
-		double[] result = GaussElimination.gaussElim(equations, false);
-		String persamaan = "y = " + result[0];
-		for (int i=1; i<result.length-1; i++) {
-			if (result[i] > 0) {
+		double[] result = GaussElimination.gaussElim(equations);
+		// Mengecek apakah ada hasil/tidak
+		isResultZero = true;
+		for (int i=0; i<result.length; i++) {
+			if(result[i] != 0) {
+				isResultZero = false;
+				break;
+			}
+		}
+		if (!isResultZero) {
+			String persamaan = "y = " + result[0];
+			for (int i=1; i<result.length-1; i++) {
+				if (result[i] > 0) {
+					persamaan += " + ";
+				}
+				else {
+					persamaan += " - ";
+				}
+				persamaan += Math.abs(result[i]) + "x" + i;
+			}
+			if (result[result.length-1] > 0) {
 				persamaan += " + ";
 			}
 			else {
 				persamaan += " - ";
 			}
-			persamaan += Math.abs(result[i]) + "x" + i;
+			persamaan += Math.abs(result[result.length-1]) + "x" + (result.length-1);
+			System.out.println("Persamaan regresi : " + persamaan);
+			hasilK = result[0];
+			for (int i=0;i<target.length;i++) {
+				hasilK += target[i]*result[i+1];
+			}
+			System.out.println("yk = " + hasilK);
 		}
-		if (result[result.length-1] > 0) {
-			persamaan += " + ";
-		}
-		else {
-			persamaan += " - ";
-		}
-		persamaan += Math.abs(result[result.length-1]) + "x" + (result.length-1);
-		System.out.println("Persamaan regresi : " + persamaan);
-		hasilK = result[0];
-		for (int i=0;i<target.length;i++) {
-			hasilK += target[i]*result[i+1];
-		}
-		System.out.println("yk = " + hasilK);
 	}
 }

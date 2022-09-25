@@ -1,8 +1,6 @@
 package linearAlgebra;
 
 import java.util.Scanner;
-import spl.*;
-import matrix.Matrix;
 
 public class Interpolation {
 	public static void interpolasi(double x){
@@ -32,7 +30,7 @@ public class Interpolation {
             m.setElmt(i, n, input.nextDouble());
         }
         m.displayMatrix();
-        a = GaussElimination.gaussElim(m, false);
+        a = GaussElimination.gaussElim(m);
         y = a[0];
         for (int i=1; i<n; i++){
             y += a[i]*Math.pow(x, i);
