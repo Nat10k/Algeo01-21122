@@ -79,7 +79,7 @@ public class Bicubic {
 		xMat.displayMatrix();
 		
 		// Mengisi matriks hasil a dari hasil perkalian matrix X dengan matrix inputMtrx
-		Matrix.inverse(xMat);
+		// Matrix.inverse(xMat);
 //		arrayA = multiplyMatrix(inverse(xMat),nilaiF);
 //		arrayA.displayMatrix();
 	}
