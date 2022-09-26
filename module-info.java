@@ -5,5 +5,5 @@
  * @author Nathan
  *
  */
-module linearAlgebra {
+module linearAlgebraLibrary {
 }

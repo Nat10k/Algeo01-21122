@@ -1,6 +1,5 @@
-package spl;
+package linearAlgebra;
 import java.util.*;
-import matrix.Matrix;
 
 public class GaussJordan{
     public static void main(String[] args){
