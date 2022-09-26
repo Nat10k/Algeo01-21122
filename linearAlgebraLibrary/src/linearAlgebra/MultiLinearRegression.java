@@ -17,25 +17,24 @@ public class MultiLinearRegression {
 		System.out.println("Masukan dari file ?");
 		fromFile = input.nextBoolean();
 		if (fromFile) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
-			System.out.println("Masukkan nama file");
+			System.out.println("Masukkan path file");
 			String fileName = input.next();
 			data.readMatrix(fileName);
-			
-			// Mengisi array penampung elemen yang ingin dicari
-			target = new double[data.getCol()-1];
-			for (int j=0; j<data.getCol()-1; j++) { 
-				target[j] = data.getElmt(data.getRow()-1, j);
+			n = data.getCol()-1;
+			m = data.getRow();
+			// Menerima masukan target
+			target = new double[n];
+			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
+			for (int i = 0; i<n; i++) {
+				target[i] = input.nextDouble();
 			}
-			data.mtrx.get(data.getRow()-1).clear();
-			data.row--;
 		} 
 		else { // Menerima masukan data dari keyboard
-			System.out.println("Masukkan banyak peubah x");
+			System.out.println("Masukkan banyak peubah");
 			n = input.nextInt();
 			System.out.println("Masukkan banyak sample");
 			m = input.nextInt();
-			
-			// Menerima masukan data
+			// Menerima masukan target
 			target = new double[n];
 			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
 			for (int i = 0; i<n; i++) {
@@ -43,6 +42,7 @@ public class MultiLinearRegression {
 			}
 			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
 			data.readMatrix(m, n+1);
+			input.close();
 		}
 		input.close();
 		

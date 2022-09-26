@@ -15,7 +15,7 @@ public class Bicubic {
 		Scanner input = new Scanner(System.in);
 		
 		// Menerima nama file dan membaca array inputMtrx dari file
-		System.out.println("Masukkan nama file");
+		System.out.println("Masukkan path file");
 		fileName = input.next();
 		inputMtrx.readMatrix(fileName);
 		input.close();

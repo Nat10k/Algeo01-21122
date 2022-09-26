@@ -95,7 +95,7 @@ public class GaussElimination {
         	fromFile = input.nextBoolean();
         	if (fromFile) {
         		String fileName;
-        		System.out.println("Masukkan nama file");
+        		System.out.println("Masukkan path file");
         		fileName = input.next();
         		m.readMatrix(fileName);
         	}
@@ -114,19 +114,6 @@ public class GaussElimination {
         else {
         	SPL = false;
         }
-//        for(j=0; j<m.getCol(); j++){
-//            for(i=0; i<m.getRow(); i++)
-//            {
-//                if(i!=j)
-//                {
-//                    t=m.getElmt(i,j)/m.getElmt(j,j);
-//                    for(k=0; k<m.getCol(); k++)
-//                    {
-//                        m.setElmt(i,k,(m.getElmt(i,k)-t*m.getElmt(j,k)));
-//                    }
-//                }
-//            }
-//        }
         // Membuat matriks segitiga atas
         forwardElimination(m);
         
@@ -183,26 +170,6 @@ public class GaussElimination {
 	        				for (int j=m.getCol()-1; j>=0; j--) {
 	        					parametrik.setElmt(firstNonZero, j, m.getElmt(i,j));
 	        				}
-	        				
-	//        				a[firstNonZero] = 1;
-	//        				hasil = "x"+(firstNonZero+1) + " = ";
-	//        				// Membuat persamaan parametrik
-	//        				for (int j=firstNonZero+1; j<m.getCol(); j++) {
-	//        					if (j==m.getCol()-1) {
-	//        						if (i<lastRowNonZero && m.getElmt(i, j) == 0) {
-	//        							// Jangan cetak hasil bila 0
-	//        						}
-	//        						else {
-	//        							hasil += m.getElmt(i, j);
-	//        						}
-	//        					}
-	//        					else if (m.getElmt(i, j) != 0){
-	//        						hasil += (-1)*m.getElmt(i, j) + "x" + (j+1);
-	//        						if (m.getElmt(i, j+1) > 0) {
-	//        							hasil += "+";
-	//        						}
-	//        					}
-	//        				}
 	        			}
 	        		}
 	        		

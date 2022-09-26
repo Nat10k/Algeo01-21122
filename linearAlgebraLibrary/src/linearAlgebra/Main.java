@@ -35,13 +35,14 @@ public class Main {
 		// Uji coba
 //	    Matrix m = new Matrix();
 //	    Matrix m2 = new Matrix();
-//	    m.readMatrix(4,5);
+//	    m.readMatrix("./test/testPolinom.txt");
 //	    m2.readMatrix("./test/testMultiply.txt");
 //	    Matrix.multiplyMatrix(m,m2).displayMatrix();
 		
 //	    m.displayMatrix();
 //	    GaussElimination.gaussElim();
 //		MultiLinearRegression.multiRegression();
+//		Interpolation.interpolasi();
 		
 //		bicubic();
 //		Matrix m = new Matrix();
@@ -50,6 +51,7 @@ public class Main {
 //		System.out.println(determinantCofactor(m));
 //		transpose(m);
 //		inverse(m);
+//		GaussJordan.gaussjordanElim();
 	}
 
 }
