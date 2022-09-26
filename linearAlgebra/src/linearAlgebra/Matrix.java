@@ -1,4 +1,4 @@
-package matrix;
+package linearAlgebra;
 import java.util.*;
 import java.io.*;
 

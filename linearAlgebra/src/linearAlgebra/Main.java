@@ -40,7 +40,7 @@ public class Main {
 //	    Matrix.multiplyMatrix(m,m2).displayMatrix();
 		
 //	    m.displayMatrix();
-	    GaussElimination.gaussElim();
+//	    GaussElimination.gaussElim();
 //		MultiLinearRegression.multiRegression();
 		
 //		bicubic();
