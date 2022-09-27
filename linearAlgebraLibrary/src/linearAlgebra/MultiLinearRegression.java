@@ -80,8 +80,6 @@ public class MultiLinearRegression {
 				}
 			}
 		}
-		System.out.println("SPL dari Normal Estimation Equation for Multiple Linear Regression");
-		equations.displayMatrix();
 		
 		// Mencetak persamaan hasil
 		double[] result = GaussElimination.gaussElim(equations);
@@ -94,7 +92,7 @@ public class MultiLinearRegression {
 			}
 		}
 		if (!isResultZero) {
-			String persamaan = "y = " + result[0];
+			String persamaan = "f(x) = " + result[0];
 			for (int i=1; i<result.length-1; i++) {
 				if (result[i] > 0) {
 					persamaan += " + ";
@@ -111,12 +109,16 @@ public class MultiLinearRegression {
 				persamaan += " - ";
 			}
 			persamaan += Math.abs(result[result.length-1]) + "x" + (result.length-1);
-			System.out.println("Persamaan regresi : " + persamaan);
+			System.out.println(persamaan);
 			hasilK = result[0];
+			String asked = ""+target[0];
 			for (int i=0;i<target.length;i++) {
 				hasilK += target[i]*result[i+1];
+				if (i > 0) {
+					asked += "," + target[i];
+				}
 			}
-			System.out.println("yk = " + hasilK);
+			System.out.println("f(" + asked + ") = " + hasilK);
 		}
 	}
 }

@@ -67,7 +67,7 @@ public class Matrix {
 	        this.setCol(nCol);
 	        this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
 			for(int i=0; i<nRow; i++){
-				System.out.println("Baris " + (i+1));
+				System.out.println("Baris/Persamaan " + (i+1));
 				this.addRow();
 	            for(int j=0; j<nCol; j++){
 	            	this.addElmt(i,input.nextDouble());
@@ -149,6 +149,20 @@ public class Matrix {
             }
         }
     	return mTrans;
+    }
+    
+    public static Matrix copyMatrix(Matrix m) {
+    	// Menghasilkan matrix salinan matrix m
+    	Matrix mCopy = new Matrix();
+    	mCopy.setRow(m.getRow());
+    	mCopy.setCol(m.getCol());
+    	for (int i=0; i<mCopy.getCol(); i++) {
+    		mCopy.addRow();
+    		for (int j=0; j<mCopy.getRow(); j++) {
+    			mCopy.addElmt(i, m.getElmt(i, j));
+    		}
+    	}
+    	return mCopy;
     }
     
     public static void swap(Matrix m, int row1, int row2) {

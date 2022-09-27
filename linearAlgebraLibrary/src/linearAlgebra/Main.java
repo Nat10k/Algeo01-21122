@@ -35,7 +35,8 @@ public class Main {
 		// Uji coba
 //	    Matrix m = new Matrix();
 //	    Matrix m2 = new Matrix();
-//	    m.readMatrix("./test/testPolinom.txt");
+//	    m.readMatrix("./test/testInverse.txt");
+//	    GaussJordan.inverseOBE(m).displayMatrix();
 //	    m2.readMatrix("./test/testMultiply.txt");
 //	    Matrix.multiplyMatrix(m,m2).displayMatrix();
 		
@@ -44,13 +45,9 @@ public class Main {
 //		MultiLinearRegression.multiRegression();
 //		Interpolation.interpolasi();
 		
-//		bicubic();
+//		Bicubic.bicubic();
 //		Matrix m = new Matrix();
-//		m.readMatrix("testDet.txt");
-////		m.displayMatrix();
-//		System.out.println(determinantCofactor(m));
-//		transpose(m);
-//		inverse(m);
+////	m.displayMatrix();
 //		GaussJordan.gaussjordanElim();
 	}
 

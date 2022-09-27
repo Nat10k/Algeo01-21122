@@ -12,6 +12,7 @@ public class Bicubic {
 		double[] nilaiAB = new double[2]; // Array penampung nilai A,B yang ingin dicari hasil f(A,B) nya
 		Matrix arrayA = new Matrix(); // Array penampung nilai aij
 		String fileName;
+		double hasil;
 		Scanner input = new Scanner(System.in);
 		
 		// Menerima nama file dan membaca array inputMtrx dari file
@@ -32,7 +33,6 @@ public class Bicubic {
 			nilaiF.addRow();
 			nilaiF.row++;
 		}
-		System.out.println(nilaiF.getRow());
 		nilaiF.setCol(1);
 		int newRowNilaiF = 0;
 		for (int i=0; i<4; i++) {
@@ -41,7 +41,6 @@ public class Bicubic {
 				newRowNilaiF++;
 			}
 		}
-		
 		
 		// Inisialisasi matrix X
 		xMat.setRow(16);
@@ -74,11 +73,12 @@ public class Bicubic {
 				y++;
 			}
 		}
-		xMat.displayMatrix();
-		
 		// Mengisi matriks a dari hasil perkalian matrix X dengan matrix inputMtrx
-		// Matrix.inverse(xMat);
-//		arrayA = multiplyMatrix(inverse(xMat),nilaiF);
-//		arrayA.displayMatrix();
+		arrayA = Matrix.multiplyMatrix(GaussJordan.inverse(xMat),nilaiF);
+		hasil = 0;
+		for (int i=0; i<arrayA.getRow(); i++) {
+			hasil += arrayA.getElmt(i, 0)*Math.pow(nilaiAB[0],i%4)*Math.pow(nilaiAB[1],Math.floorDiv(i, 4));
+		}
+		System.out.println("f("+nilaiAB[0]+","+nilaiAB[1]+") = "+hasil);
 	}
 }

@@ -14,7 +14,7 @@ public class GaussElimination {
 				row_max = k;
 		        max = m.getElmt(row_max, r);
 		        for (int i=k+1;i<m.getRow();i++) {
-		            if(Math.abs(m.getElmt(i, r)) > max) {
+		            if(Math.abs(m.getElmt(i, r)) > Math.abs(max)) {
 		                row_max = i;
 		                max = m.getElmt(i, r);
 		            }
@@ -82,7 +82,6 @@ public class GaussElimination {
     	// Fungsi eliminasi Gauss, m matrix augmented
         boolean noSolution, manySolution, SPL, fromFile;
         int firstNonZero = -1;
-        int lastRowNonZero = -1;
         
         // Jika tidak diberikan matrix m
         if (m == null) {
@@ -130,7 +129,6 @@ public class GaussElimination {
         	}
         	else if ((zeroRow(m,i,true) && m.getElmt(i, m.getCol()-1) == 0 && i < m.getCol()-1) || m.getCol() > m.getRow()+1) {
         		manySolution = true;
-        		lastRowNonZero = i-1;
         	}
         }
         
