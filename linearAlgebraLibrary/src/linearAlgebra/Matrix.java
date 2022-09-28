@@ -8,10 +8,16 @@ public class Matrix {
 	public ArrayList<ArrayList<Double>> mtrx = new ArrayList<>(); // Bagian matrix
 	public int row,col; // Banyak baris dan kolom matrix
 	
-	public Matrix() {
-		// Inisialisasi Matrix kosong
-		row = 0;
+	public Matrix() { // Matrix belum diketahui ukurannya (misal saat membaca dari file
+		row =0;
 		col = 0;
+	}
+	
+	public Matrix(int nRow, int nCol) {
+		// Inisialisasi Matrix kosong
+		if (nRow > 0 && nCol > 0) {
+			setSize(nRow, nCol);
+		}
 	}
 	
 	// Selektor
@@ -28,12 +34,15 @@ public class Matrix {
 		return this.mtrx.get(i).get(j);
 	}
 	
-	public void setRow(int nRow) {
-		this.row = nRow;
-	}
-	
-	public void setCol(int nCol) {
-		this.col = nCol;
+	public void setSize(int nRow, int nCol) {
+		// Membuat matrix "kosong" berukuran nRow x nCol
+		this.mtrx.clear();
+		for (int i=0; i<nRow; i++) {
+			this.addRow();
+			for (int j=0; j<nCol; j++) {
+				this.addElmt(i, 0);
+			}
+		}
 	}
 	
 	public void setElmt(int i, int j, double val) {
@@ -44,33 +53,34 @@ public class Matrix {
 	public void addRow() {
 		// Menambahkan baris baru ke matrix
 		this.mtrx.add(new ArrayList <>());
+		this.row++;
 	}
 	
 	public void addElmt(int i, double val) {
 		// Menambahkan kolom baru beserta elemennya ke baris i
 		this.mtrx.get(i).add(val);
+		this.col = this.mtrx.get(i).size();
 	}
 	
+	// Input Matrix dari file/keyboard
 	public void readMatrix(int nRow, int nCol) {
 		readMatrix(nRow, nCol, null);
 	}
 	
 	public void readMatrix(String fileName) {
-		readMatrix(-1,-1, fileName);
+		readMatrix(0, 0, fileName);
 	}
 	
 	public void readMatrix(int nRow, int nCol, String fileName){
+		// Mengisi matriks 
 		if (fileName == null) {
 			// Membaca elemen matriks dari keyboard
 			Scanner input = new Scanner(System.in);
-			this.setRow(nRow);
-	        this.setCol(nCol);
-	        this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
+			this.setSize(nRow, nCol);
 			for(int i=0; i<nRow; i++){
 				System.out.println("Baris/Persamaan " + (i+1));
-				this.addRow();
 	            for(int j=0; j<nCol; j++){
-	            	this.addElmt(i,input.nextDouble());
+	            	this.setElmt(i,j,input.nextDouble());
 	            }
 	        }
 			input.close();
@@ -80,20 +90,18 @@ public class Matrix {
 				Scanner inputFile = new Scanner(mtrxFile);
 				
 				this.mtrx.clear(); // Kosongkan matriks sebelum diisi ulang
-				this.setRow(0);
-				this.setCol(0);
+				this.row = 0;
+				this.col = 0;
 				
 				while(inputFile.hasNextLine()) { // Mengisikan matriks
 					this.addRow();
 					Scanner elInput = new Scanner(inputFile.nextLine());
 					while(elInput.hasNextDouble()) {
-						this.mtrx.get(this.mtrx.size()-1).add(elInput.nextDouble());
+						this.addElmt(this.getRow()-1, elInput.nextDouble());
 					}
 					elInput.close();
 				}
 				inputFile.close();
-				this.setRow(this.mtrx.size());
-				this.setCol(this.mtrx.get(0).size());
 			}
 			catch (FileNotFoundException e) {
 				System.out.println("File is not found");
@@ -104,6 +112,7 @@ public class Matrix {
 			
     }
 	
+	// Output Matrix
     public void displayMatrix(){
     	// Menuliskan seluruh matrix ke layar
         for(int i=0; i<this.getRow(); i++){
@@ -114,24 +123,20 @@ public class Matrix {
         }
     }
     
+    // Operasi Matrix
     public static Matrix multiplyMatrix(Matrix m1, Matrix m2) {
     	// Menghasilkan matriks hasil perkalian m1 dengan m2, diasumsikan m1.getCol() = m2.getRow()
-    	Matrix result = new Matrix();
+    	Matrix result = new Matrix(m1.getRow(),m2.getCol());
     	double sum;
     	
     	// Melakukan perkalian matriks
-    	for(int i=0;i<m1.getRow();i++) {
-    		result.addRow();
-    		result.row++;
-            for(int j=0;j<m2.getCol();j++) {
+    	for(int i=0;i<result.getRow();i++) {
+            for(int j=0;j<result.getCol();j++) {
                 sum = 0;
                 for(int k=0;k<m1.getCol();k++) {
                 	sum += m1.getElmt(i, k) * m2.getElmt(k, j);
                 }
-                result.addElmt(i,sum);
-                if (i == 0) {
-                	result.col++;
-                }
+                result.setElmt(i,j,sum);
             }
         }
     	return result;
@@ -139,13 +144,10 @@ public class Matrix {
     
     public static Matrix transpose(Matrix m) {
     	// Menghasillkan matrix transpose matrix m
-    	Matrix mTrans = new Matrix();
-    	mTrans.setRow(m.getCol());
-    	mTrans.setCol(m.getRow());
+    	Matrix mTrans = new Matrix(m.getCol(),m.getRow());
     	for(int i=0;i<mTrans.getRow();i++) {
-    		mTrans.addRow();
             for(int j=0;j<mTrans.getCol();j++) {
-                mTrans.addElmt(i, m.getElmt(j, i));
+                mTrans.setElmt(i,j, m.getElmt(j, i));
             }
         }
     	return mTrans;
@@ -153,13 +155,10 @@ public class Matrix {
     
     public static Matrix copyMatrix(Matrix m) {
     	// Menghasilkan matrix salinan matrix m
-    	Matrix mCopy = new Matrix();
-    	mCopy.setRow(m.getRow());
-    	mCopy.setCol(m.getCol());
-    	for (int i=0; i<mCopy.getCol(); i++) {
-    		mCopy.addRow();
-    		for (int j=0; j<mCopy.getRow(); j++) {
-    			mCopy.addElmt(i, m.getElmt(i, j));
+    	Matrix mCopy = new Matrix(m.getRow(),m.getCol());
+    	for (int i=0; i<mCopy.getRow(); i++) {
+    		for (int j=0; j<mCopy.getCol(); j++) {
+    			mCopy.setElmt(i,j, m.getElmt(i, j));
     		}
     	}
     	return mCopy;
@@ -172,10 +171,10 @@ public class Matrix {
     	}
     	else {
 	    	double temp; // Penampung nilai sementara
-	    	for (int i=0; i<m.getCol();i++) {
-	    		temp = m.getElmt(row1, i);
-	    		m.setElmt(row1, i, m.getElmt(row2, i));
-	    		m.setElmt(row2, i, temp);
+	    	for (int j=0; j<m.getCol();j++) {
+	    		temp = m.getElmt(row1, j);
+	    		m.setElmt(row1, j, m.getElmt(row2, j));
+	    		m.setElmt(row2, j, temp);
 	    	}	
     	}
     }

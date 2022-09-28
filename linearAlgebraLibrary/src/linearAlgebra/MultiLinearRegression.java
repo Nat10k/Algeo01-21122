@@ -42,41 +42,37 @@ public class MultiLinearRegression {
 			}
 			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
 			data.readMatrix(m, n+1);
-			input.close();
 		}
 		input.close();
 		
 		// Membuat matriks SPL regresi
-		Matrix equations = new Matrix();
-		equations.setRow(data.getCol());
-		equations.setCol(data.getCol()+1);
+		Matrix equations = new Matrix(data.getCol(), data.getCol()+1);
 		
 		for (int i=0;i<equations.getRow();i++) {
-			equations.addRow();
 			for (int j=0; j<equations.getCol();j++) {
 				if (i == 0 && j == 0) { // Koefisien B0 pertama
-					equations.addElmt(i, (double) data.getRow());
+					equations.setElmt(i, j, (double) data.getRow());
 				} 
 				else if (i==0) { // SPL baris pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,j-1);
 					}
-					equations.addElmt(i,sum);
+					equations.setElmt(i, j, sum);
 				}
 				else if (j==0) { // SPL kolom pertama
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k,i-1);
 					}
-					equations.addElmt(i,sum);
+					equations.setElmt(i, j, sum);
 				}
 				else {
 					sum = 0;
 					for (int k=0; k<data.getRow();k++) {
 						sum += data.getElmt(k, i-1) * data.getElmt(k,j-1);
 					}
-					equations.addElmt(i,sum);
+					equations.setElmt(i, j, sum);
 				}
 			}
 		}

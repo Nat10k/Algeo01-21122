@@ -49,6 +49,21 @@ public class Main {
 //		Matrix m = new Matrix();
 ////	m.displayMatrix();
 //		GaussJordan.gaussjordanElim();
+		
+//		Matrix m = new Matrix();
+//		m.readMatrix("./test/testDet.txt");
+//		System.out.println(Determinant.determinanCofactor(m));
+//		System.out.println(Determinant.determinanReduction(m));
+//		Matrix mInverse = Inverse.inverseGaussJordan(m);
+//		if (mInverse != null) {
+//			mInverse.displayMatrix();
+//		}
+//		mInverse = Inverse.inverseAdjoint(m);
+//		if (mInverse != null) {
+//			mInverse.displayMatrix();
+//		}
+		
+//		Inverse.solveSPLInverse();
 	}
 
 }

@@ -8,7 +8,7 @@ public class Interpolation {
         int n;
         double x,y; // x yang ingin dicari hasil y nya
         double[] a;
-        Matrix m = new Matrix();
+        Matrix m;
         Matrix titik = new Matrix();
         boolean fromFile;
         Scanner input = new Scanner(System.in);
@@ -23,21 +23,17 @@ public class Interpolation {
 			n = titik.getRow();
 			
 			// Membuat matriks persamaan
-			m.setRow(n);
-	        m.setCol(n+1);
-	        for (int i=0; i<m.getRow(); i++) {
-	        	m.addRow();
-	        }
+			m = new Matrix(n,n+1);
 	        a = new double[n];
 	        for (int i = 0; i<n; i++){
-	            m.addElmt(i,1);
+	            m.setElmt(i,0,1);
 	        }
 			for (int i = 0; i<n; i++){
-	            m.addElmt(i, titik.getElmt(i, 0));
+	            m.setElmt(i,1,titik.getElmt(i, 0));
 	            for(int j=2; j<n; j++){
-	            	m.addElmt(i, Math.pow(m.getElmt(i, 1), j));
+	            	m.setElmt(i,j,Math.pow(m.getElmt(i, 1), j));
 	            }
-	            m.addElmt(i, titik.getElmt(i,1));
+	            m.setElmt(i,n, titik.getElmt(i,1));
 	        }
 		} 
 		else { // Menerima masukan data dari keyboard
@@ -45,23 +41,19 @@ public class Interpolation {
 	        n = input.nextInt();
 	        
 	        // Menerima masukan nilai x,y dan membuat matriks persamaan
-	        m.setRow(n);
-	        m.setCol(n+1);
-	        for (int i=0; i<m.getRow(); i++) {
-	        	m.addRow();
-	        }
+	        m = new Matrix(n,n+1);
 	        a = new double[n];
 	        for (int i = 0; i<n; i++){
-	            m.addElmt(i,1);
+	            m.setElmt(i,0,1);
 	        }
 	        for (int i = 0; i<n; i++){
 	            System.out.println("Masukkan x" +(i+1));
-	            m.addElmt(i, input.nextDouble());
+	            m.setElmt(i,1, input.nextDouble());
 	            for(int j=2; j<n; j++){
-	            	m.addElmt(i, Math.pow(m.getElmt(i, 1), j));
+	            	m.setElmt(i, j, Math.pow(m.getElmt(i, 1), j));
 	            }
 	            System.out.println("Masukkan y" + (i+1) +"= ");
-	            m.addElmt(i, input.nextDouble());
+	            m.setElmt(i, n, input.nextDouble());
 	        }
 		}
 		// Menerima masukan nilai x yang ingin dicari hasilnya
@@ -75,7 +67,7 @@ public class Interpolation {
             y += a[i]*Math.pow(x, i);
         }
         System.out.print("f(x) = ");
-        for(int i= m.getRow()-1; i>=0; i--){
+        for(int i = m.getRow()-1; i>=0; i--){
             if (a[i] > 0) {
                 System.out.print("+");
             }

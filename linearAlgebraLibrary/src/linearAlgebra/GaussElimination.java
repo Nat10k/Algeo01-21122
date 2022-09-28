@@ -3,14 +3,24 @@ package linearAlgebra;
 import java.util.*;
 
 public class GaussElimination {
-	private static void forwardElimination(Matrix m) {
+	static void forwardElimination(Matrix m) {
+		forwardElimination(m,false);
+	}
+	static void forwardElimination(Matrix m, boolean inv) {
 		// Membuat matriks m menjadi matriks eselon baris
-		int row_max;
+		int row_max, colLimit; // colLimit adalah pembatas kolom yang disearch untuk nilai max
 		double max, factor;
 		
+		if (inv) {
+			colLimit = m.getRow();
+		}
+		else {
+			colLimit = m.getCol()-1;
+		}
+		
 		for (int k=0;k<m.getRow();k++) {
-		    for (int r=k; r<m.getCol()-1; r++) {
-		    	// Mencari nilai terbesar dari tiap baris pada kolom koefisien yang bersangkutan
+		    for (int r=k; r<colLimit; r++) {
+		    	// Mencari nilai terbesar dari tiap baris pada kolom r
 				row_max = k;
 		        max = m.getElmt(row_max, r);
 		        for (int i=k+1;i<m.getRow();i++) {
@@ -46,31 +56,32 @@ public class GaussElimination {
 		}
 	}
 	
-	private static boolean zeroRow(Matrix m, int rowIdx, boolean SPL) {
+	static boolean zeroRow(Matrix m, int rowIdx, boolean SPL) {
+		return zeroRow(m, rowIdx, SPL, false);
+	}
+	
+	static boolean zeroRow(Matrix m, int rowIdx, boolean SPL, boolean inv) {
 		// Mengembalikan true jika baris rowIdx berisi 0 saja (untuk non-SPL) atau semua koefisien 0 (untuk SPL)
+		boolean isZeroRow = true;
+		int colLimit; // Batas kolom yang perlu dicari
 		if (SPL) {
-			boolean coefZero = true;
-			int j = 0;
-			while (j < m.getCol()-1 && coefZero) {
-				if (m.getElmt(rowIdx, j) != 0) {
-					coefZero = false;
-				} else {
-					j++;
-				}
-			}
-			return coefZero;
-		} else {
-			boolean allZero = true;
-			int j = 0;
-			while (j < m.getCol() && allZero) {
-				if (m.getElmt(rowIdx, j) != 0) {
-					allZero = false;
-				} else {
-					j++;
-				}
-			}
-			return allZero;
+			colLimit = m.getCol()-1;
+		} 
+		else if (inv) { // Mengecek baris 0 untuk inverse matriks metode reduksi
+			colLimit = m.getRow();
 		}
+		else {
+			colLimit = m.getCol();
+		}
+		int j = 0;
+		while (j < colLimit && isZeroRow) {
+			if (m.getElmt(rowIdx, j) != 0) {
+				isZeroRow = false;
+			} else {
+				j++;
+			}
+		}
+		return isZeroRow;
 	}
 	
 	public static double[] gaussElim () {
@@ -103,10 +114,8 @@ public class GaussElimination {
 	        	int jumPersamaan = input.nextInt();
 	        	System.out.println("Masukkan banyak variabel");
 	        	int jumVariabel = input.nextInt();
-	        	m.setRow(jumPersamaan);
-	        	m.setCol(jumVariabel+1);
 	        	System.out.println("Masukan semua koefisien per persamaan diikuti hasil tiap persamaan di akhir");
-	        	m.readMatrix(m.getRow(),m.getCol());
+	        	m.readMatrix(jumPersamaan,jumVariabel+1);
 	        }
         	input.close();
         }
@@ -142,17 +151,7 @@ public class GaussElimination {
         		}
         		else {
         			String hasil;
-	        		Matrix parametrik = new Matrix(); // Matrix penampung koefisien persamaan parametrik
-	        		
-	        		// Inisialisasi Matrix parametrik
-	        		parametrik.setRow(m.getCol()-1);
-	        		parametrik.setCol(m.getCol());
-	        		for (int i=0; i<parametrik.getRow(); i++) {
-	        			parametrik.addRow();
-	        			for (int j=0; j<parametrik.getCol(); j++) {
-	        				parametrik.addElmt(i, 0);
-	        			}
-	        		}
+	        		Matrix parametrik = new Matrix(m.getCol()-1, m.getCol()); // Matrix penampung koefisien persamaan parametrik
 	        		
 	        		// Mengisi matrix persamaan parametrik
 	        		for (int i=m.getRow()-1; i>=0;i--) {
