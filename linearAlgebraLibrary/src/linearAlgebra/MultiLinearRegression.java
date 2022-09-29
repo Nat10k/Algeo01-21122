@@ -3,17 +3,12 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class MultiLinearRegression {
-	public static void multiRegression() {
-		// Melakukan regresi linear berganda
-		
-		// Menerima banyak variabel dan jumlah sample
+	static Matrix inputDataRegresi(Scanner input) {
+		boolean fromFile;
 		int n,m;
-		double sum, hasilK;
 		double[] target;
-		boolean fromFile, isResultZero;
 		Matrix data = new Matrix();
 		
-		Scanner input = new Scanner(System.in);
 		System.out.println("Masukan dari file ?");
 		fromFile = input.nextBoolean();
 		if (fromFile) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
@@ -22,12 +17,6 @@ public class MultiLinearRegression {
 			data.readMatrix(fileName);
 			n = data.getCol()-1;
 			m = data.getRow();
-			// Menerima masukan target
-			target = new double[n];
-			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
-			for (int i = 0; i<n; i++) {
-				target[i] = input.nextDouble();
-			}
 		} 
 		else { // Menerima masukan data dari keyboard
 			System.out.println("Masukkan banyak peubah");
@@ -41,9 +30,32 @@ public class MultiLinearRegression {
 				target[i] = input.nextDouble();
 			}
 			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
-			data.readMatrix(m, n+1);
+			data.readMatrix(m, n+1, input);
 		}
-		input.close();
+		return data;
+	}
+	
+	static double[] inputTargetRegresi(Matrix data, Scanner input) {
+		// Menerima masukan target
+		int n = data.getCol()-1;
+		double[] target = new double[n];
+		System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
+		for (int i = 0; i<n; i++) {
+			target[i] = input.nextDouble();
+		}
+		return target;
+	}
+	
+	public static void multiRegression(Scanner input) {
+		Matrix data = inputDataRegresi(input);
+		double[] target = inputTargetRegresi(data,input);
+		multiRegression(data, target);
+	}
+	
+	public static void multiRegression(Matrix data, double[] target) {
+		// Melakukan regresi linear berganda
+		double sum, hasilK;
+		boolean isResultZero;
 		
 		// Membuat matriks SPL regresi
 		Matrix equations = new Matrix(data.getCol(), data.getCol()+1);
@@ -78,7 +90,7 @@ public class MultiLinearRegression {
 		}
 		
 		// Mencetak persamaan hasil
-		double[] result = GaussElimination.gaussElim(equations);
+		double[] result = SPL.gaussElim(equations,false);
 		// Mengecek apakah ada hasil/tidak
 		isResultZero = true;
 		for (int i=0; i<result.length; i++) {

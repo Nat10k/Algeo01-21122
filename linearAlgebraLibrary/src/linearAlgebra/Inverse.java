@@ -72,12 +72,12 @@ public class Inverse {
     	}
     	
     	// Eliminasi Gauss-Jordan
-    	GaussElimination.forwardElimination(addedIdentity,true);
-    	GaussJordan.backwardElimination(addedIdentity);
+    	SPL.forwardElimination(addedIdentity,true);
+    	SPL.backwardElimination(addedIdentity);
     	
     	// Ada baris yang 0 (matriks tidak memiliki inverse
     	for (int i=addedIdentity.getRow()-1; i>=0; i--) {
-    		if (GaussElimination.zeroRow(addedIdentity,i,false,true)) {
+    		if (SPL.zeroRow(addedIdentity,i,false,true)) {
     			System.out.println("Matriks tidak memiliki inverse");
     			invertible = false;
     			break;
@@ -97,61 +97,5 @@ public class Inverse {
     	else {
     		return null;
     	}
-    }
-
-    public static Matrix solveSPLInverse(){
-    	// Menyelesaikan SPL memakai inverse matrix
-    	// Menerima input matriks arr
-    	Matrix arr = new Matrix();
-    	boolean fromFile;
-    	
-    	Scanner input = new Scanner(System.in);
-    	
-    	// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
-    	System.out.println("Masukan dari file ?");
-    	fromFile = input.nextBoolean();
-    	if (fromFile) {
-    		String fileName;
-    		System.out.println("Masukkan path file");
-    		fileName = input.next();
-    		arr.readMatrix(fileName);
-    	}
-    	else {
-    		System.out.println("Masukkan banyak persamaan");
-        	int jumPersamaan = input.nextInt();
-        	System.out.println("Masukkan banyak variabel");
-        	int jumVariabel = input.nextInt();
-        	System.out.println("Masukan semua koefisien per persamaan diikuti hasil tiap persamaan di akhir");
-        	arr.readMatrix(jumPersamaan,jumVariabel+1);
-        }
-    	input.close();
-    	
-        int brs = arr.getRow();
-        int kol = arr.getCol();
-        Matrix A = new Matrix(brs,kol-1);
-        Matrix invA;
-        Matrix B = new Matrix(brs,1);
-        Matrix result;
-        for (int i = 0; i < brs; ++i){
-            for (int j = 0; j < kol - 1; ++j){
-            	A.setElmt(i, j, arr.getElmt(i, j));
-            }
-        }
-
-        for (int i = 0; i < brs; ++i){
-        	B.setElmt(i, 0, arr.getElmt(i, kol-1));
-        }
-        
-        invA = inverseGaussJordan(A);
-        if (invA != null) {
-        	result = Matrix.multiplyMatrix(invA, B);
-        	for (int i=0; i<result.getRow(); i++) {
-        		System.out.println("x"+(i+1)+" = "+result.getElmt(i, 0));
-        	}
-        	return result;
-        }
-        else {
-        	return null;
-        }
     }
 }

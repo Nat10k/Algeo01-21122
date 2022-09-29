@@ -3,23 +3,29 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Bicubic {
-	public static void bicubic() {
-		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4
-		int x,y,pangkatX,pangkatY; // x = integer [-1..2], y = integer [-1..2], pangkatX = integer [0..3], pangkatY = integer [0..3]
-		Matrix xMat = new Matrix(16,16); // Matriks koefisien X
-		Matrix inputMtrx = new Matrix(4,4); // Array nilai f(i,j), i = integer[-1..2], j = integer[-1..2]
-		Matrix nilaiF = new Matrix(16,1);
-		double[] nilaiAB = new double[2]; // Array penampung nilai A,B yang ingin dicari hasil f(A,B) nya
-		Matrix arrayA; // Array penampung nilai aij
-		String fileName;
-		double hasil;
-		Scanner input = new Scanner(System.in);
-		
+	static Matrix inputFBicubic(Scanner input) {
 		// Menerima nama file dan membaca array inputMtrx dari file
+		String fileName;
+		Matrix inputMtrx = new Matrix();
 		System.out.println("Masukkan path file");
 		fileName = input.next();
 		inputMtrx.readMatrix(fileName);
-		input.close();
+		return inputMtrx;
+	}
+	
+	public static void bicubic(Scanner input) {
+		Matrix inputMtrx = inputFBicubic(input);
+		bicubic(inputMtrx);
+	}
+	
+	public static void bicubic(Matrix inputMtrx) {
+		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4
+		int x,y,pangkatX,pangkatY; // x = integer [-1..2], y = integer [-1..2], pangkatX = integer [0..3], pangkatY = integer [0..3]
+		Matrix xMat = new Matrix(16,16); // Matriks koefisien X
+		Matrix nilaiF = new Matrix(16,1);
+		double[] nilaiAB = new double[2]; // Array penampung nilai A,B yang ingin dicari hasil f(A,B) nya
+		Matrix arrayA; // Array penampung nilai aij
+		double hasil;
 		
 		// Menyimpan nilai a,b yang ingin dicari ke array nilaiAB
 		for (int i=0; i<nilaiAB.length; i++) {

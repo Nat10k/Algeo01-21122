@@ -3,15 +3,10 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Interpolation {
-	public static void interpolasi(){
-    	// Fungsi interpolasi polinom
-        int n;
-        double x,y; // x yang ingin dicari hasil y nya
-        double[] a;
-        Matrix m;
+	static Matrix inputTitikInterpolasi(Scanner input) {
+		int n;
         Matrix titik = new Matrix();
         boolean fromFile;
-        Scanner input = new Scanner(System.in);
         
         // Menerima masukan
         System.out.println("Masukan dari file ?");
@@ -20,48 +15,59 @@ public class Interpolation {
 			System.out.println("Masukkan path file");
 			String fileName = input.next();
 			titik.readMatrix(fileName);
-			n = titik.getRow();
-			
-			// Membuat matriks persamaan
-			m = new Matrix(n,n+1);
-	        a = new double[n];
-	        for (int i = 0; i<n; i++){
-	            m.setElmt(i,0,1);
-	        }
-			for (int i = 0; i<n; i++){
-	            m.setElmt(i,1,titik.getElmt(i, 0));
-	            for(int j=2; j<n; j++){
-	            	m.setElmt(i,j,Math.pow(m.getElmt(i, 1), j));
-	            }
-	            m.setElmt(i,n, titik.getElmt(i,1));
-	        }
 		} 
 		else { // Menerima masukan data dari keyboard
-			System.out.println("Masukkan jumlah titik: ");
+			System.out.println("Masukkan banyak titik: ");
 	        n = input.nextInt();
 	        
-	        // Menerima masukan nilai x,y dan membuat matriks persamaan
-	        m = new Matrix(n,n+1);
-	        a = new double[n];
-	        for (int i = 0; i<n; i++){
-	            m.setElmt(i,0,1);
-	        }
-	        for (int i = 0; i<n; i++){
-	            System.out.println("Masukkan x" +(i+1));
-	            m.setElmt(i,1, input.nextDouble());
-	            for(int j=2; j<n; j++){
-	            	m.setElmt(i, j, Math.pow(m.getElmt(i, 1), j));
-	            }
-	            System.out.println("Masukkan y" + (i+1) +"= ");
-	            m.setElmt(i, n, input.nextDouble());
+	        // Menerima masukan nilai x,y dan memasukkannya ke dalam Matrix titik
+	        titik.setSize(n, 2);
+	        for (int i=0; i<titik.getRow(); i++) {
+	        	System.out.println("Masukkan titik ke-"+ (i+1)+ " x"+(i+1)+" y"+(i+1));
+	        	titik.setElmt(i, 0, input.nextDouble());
+	        	titik.setElmt(i, 1, input.nextDouble());
 	        }
 		}
+		return titik;
+	}
+	
+	static double inputX(Scanner input) {
 		// Menerima masukan nilai x yang ingin dicari hasilnya
 		System.out.println("Masukkan nilai x yang ingin dicari hasilnya");
-		x = input.nextDouble();
-		input.close();
+		double x = input.nextDouble();
+		return x;
+	}
+	
+	public static void interpolasiPolinom(Scanner input) {
+		Matrix titik = inputTitikInterpolasi(input);
+		double x = inputX(input);
+		interpolasiPolinom(titik,x);
+	}
+	
+	public static void interpolasiPolinom(Matrix titik, double x){
+    	// Fungsi interpolasi polinom
+        int n;
+        double y; // hasil dari x yang dicari
+        double[] a;
+        Matrix m;
+        
+        n = titik.getRow();
 		
-        a = GaussElimination.gaussElim(m);
+		// Membuat matriks persamaan
+		m = new Matrix(n,n+1);
+        a = new double[n];
+        for (int i = 0; i<n; i++){
+            m.setElmt(i,0,1);
+        }
+		for (int i = 0; i<n; i++){
+            m.setElmt(i,1,titik.getElmt(i, 0));
+            for(int j=2; j<n; j++){
+            	m.setElmt(i,j,Math.pow(m.getElmt(i, 1), j));
+            }
+            m.setElmt(i,n, titik.getElmt(i,1));
+        }
+		
+        a = SPL.gaussElim(m,false);
         y = a[0];
         for (int i=1; i<n; i++){
             y += a[i]*Math.pow(x, i);
@@ -75,6 +81,5 @@ public class Interpolation {
         }
         System.out.println();
         System.out.println("f("+x+") = "+ (y) );
-        input.close();
     }
 }

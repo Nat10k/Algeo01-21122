@@ -63,19 +63,18 @@ public class Matrix {
 	}
 	
 	// Input Matrix dari file/keyboard
-	public void readMatrix(int nRow, int nCol) {
-		readMatrix(nRow, nCol, null);
+	public void readMatrix(int nRow, int nCol, Scanner input) {
+		readMatrix(nRow, nCol, null, input);
 	}
 	
 	public void readMatrix(String fileName) {
-		readMatrix(0, 0, fileName);
+		readMatrix(0, 0, fileName, null);
 	}
 	
-	public void readMatrix(int nRow, int nCol, String fileName){
+	public void readMatrix(int nRow, int nCol, String fileName, Scanner input){
 		// Mengisi matriks 
 		if (fileName == null) {
 			// Membaca elemen matriks dari keyboard
-			Scanner input = new Scanner(System.in);
 			this.setSize(nRow, nCol);
 			for(int i=0; i<nRow; i++){
 				System.out.println("Baris/Persamaan " + (i+1));
@@ -83,7 +82,6 @@ public class Matrix {
 	            	this.setElmt(i,j,input.nextDouble());
 	            }
 	        }
-			input.close();
 		} else { // Input matriks dari file
 			try {
 				File mtrxFile = new File(fileName);
