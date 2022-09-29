@@ -1,6 +1,31 @@
 package linearAlgebra;
 
+import java.util.*;
+import java.io.*;
+
 public class Determinant {
+	static Matrix inputDeterminant(Scanner input) {
+		// Fungsi untuk input matriks persoalan determinan
+		boolean fromFile;
+    	Matrix m = new Matrix();
+    	
+    	// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
+    	System.out.println("Masukan dari file ?");
+    	fromFile = input.nextBoolean();
+    	if (fromFile) {
+    		String fileName;
+    		System.out.println("Masukkan path file");
+    		fileName = input.next();
+    		m.readMatrix(fileName);
+    	}
+    	else {
+    		System.out.println("Masukkan dimensi matriks");
+        	int n = input.nextInt();
+        	m.readMatrix(n, n, input);
+        }
+    	return m;
+	}
+	
 	static void cofactor(Matrix m,Matrix temp, int a, int b){
 		// Membuat matriks cofactor dari matriks m
 		int N = m.getRow();
@@ -18,6 +43,11 @@ public class Determinant {
             }
         }
     }
+	
+	public static double determinanCofactor (Scanner input) {
+		Matrix m = inputDeterminant(input);
+		return determinanCofactor(m);
+	}
 
     public static double determinanCofactor(Matrix m){
     	// Menghasilkan determinan Matrix m dengan metode cofactor, diasumsikan m matriks persegi dan relatif kecil (ukuran kurang dari 10x10)
@@ -39,24 +69,7 @@ public class Determinant {
         }
 
     }
-
-    public static double determinanReduction(Matrix m){
-    	// Menghasilkan determinan matrix m dengan metode reduksi baris, diasumsikan m matriks persegi
-    	int N = m.getRow();
-    	Matrix temp = Matrix.copyMatrix(m);
-        int count = detRowReduction(m);
-        double det = m.getElmt(0, 0);
-        for (int i = 1; i < N; i++){
-            det *= m.getElmt(i, i);
-        }
-        m = Matrix.copyMatrix(temp);
-        if (count % 2 == 0){
-            return det;
-        } else{
-            return -det;
-        }
-    }
-
+    
     static int detRowReduction(Matrix m){
     	int N = m.getRow();
         int i = 0, l = 0, idx;
@@ -84,5 +97,26 @@ public class Determinant {
             l++;
         }
         return count;
+    }
+    
+    public static double determinanReduction(Scanner input) {
+    	Matrix m = inputDeterminant(input);
+    	return determinanReduction(m);
+    }
+    
+    public static double determinanReduction(Matrix m){
+    	// Menghasilkan determinan matrix m dengan metode reduksi baris, diasumsikan m matriks persegi
+    	Matrix temp = Matrix.copyMatrix(m);
+    	int N = m.getRow();
+        int count = detRowReduction(temp);
+        double det = temp.getElmt(0, 0);
+        for (int i = 1; i < N; i++){
+            det *= temp.getElmt(i, i);
+        }
+        if (count % 2 == 0){
+            return det;
+        } else{
+            return -det;
+        }
     }
 }

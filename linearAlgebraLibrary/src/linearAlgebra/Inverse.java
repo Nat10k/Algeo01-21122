@@ -4,6 +4,28 @@ import java.util.Scanner;
 
 public class Inverse {
 	// Class operasi inverse
+	static Matrix inputInverse(Scanner input) {
+		// Fungsi untuk input matriks persoalan determinan
+		boolean fromFile;
+    	Matrix m = new Matrix();
+    	
+    	// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
+    	System.out.println("Masukan dari file ?");
+    	fromFile = input.nextBoolean();
+    	if (fromFile) {
+    		String fileName;
+    		System.out.println("Masukkan path file");
+    		fileName = input.next();
+    		m.readMatrix(fileName);
+    	}
+    	else {
+    		System.out.println("Masukkan dimensi matriks");
+        	int n = input.nextInt();
+        	m.readMatrix(n, n, input);
+        }
+    	return m;
+	}
+	
 	public static Matrix matrixCofactor(Matrix arr){
 		// Membuat matriks kofaktor dari Matrix arr
 		Matrix mNew = new Matrix(arr.getRow(),arr.getCol());
@@ -35,6 +57,11 @@ public class Inverse {
         return Matrix.transpose(matrixCofactor(arr));
     }
     
+    public static Matrix inverseAdjoint(Scanner input) {
+    	Matrix m = inputInverse(input);
+    	return inverseAdjoint(m);
+    }
+    
 	public static Matrix inverseAdjoint(Matrix arr){
 		// Menghasilkan inverse Matriks dengan metode adjoint
         double det = Determinant.determinanReduction(arr);
@@ -52,6 +79,11 @@ public class Inverse {
         	return null;
         }
     }
+	
+	public static Matrix inverseGaussJordan(Scanner input) {
+		Matrix m = inputInverse(input);
+    	return inverseGaussJordan(m);
+	}
 	
 	public static Matrix inverseGaussJordan(Matrix m) {
     	// Prosedur inverse memakai eliminasi Gauss-Jordan, diasumsikan m adalah matriks persegi

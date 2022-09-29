@@ -7,6 +7,7 @@ public class Main {
 		int choice;
 		boolean exit = false;
 		Scanner input = new Scanner(System.in);
+		String outputFile;
 		while (!exit) {
 			System.out.println("MENU :");
 			System.out.println("1. SPL");
@@ -22,8 +23,8 @@ public class Main {
 				int splChoice;
 				System.out.println("1. Metode eliminasi Gauss");
 				System.out.println("2. Metode eliminasi Gauss-Jordan");
-				System.out.println("3. Metode matriks invers");
-				System.out.println("4. Kaidah Cramer");
+				System.out.println("3. Metode matriks invers (khusus matriks persegi)");
+				System.out.println("4. Kaidah Cramer (khusus matriks persegi)");
 				splChoice = input.nextInt();
 				if (splChoice == 1) {
 					SPL.gaussElim(input);
@@ -34,18 +35,65 @@ public class Main {
 				else if (splChoice == 3) {
 					SPL.solveSPLInverse(input);
 				}
+				else if (splChoice == 4) {
+					SPL.cramer(input);
+				}
 			}
 			else if (choice == 2) {
 				int detChoice;
 				System.out.println("1. Metode eliminasi Gauss-Jordan");
 				System.out.println("2. Metode kofaktor");
 				detChoice = input.nextInt();
+				if (detChoice == 1) {
+					double det = Determinant.determinanReduction(input);
+					System.out.println("Tulis hasil ke file ? Y/N");
+					if (input.next().equals("Y")) {
+						System.out.println("Tuliskan nama file");
+						outputFile = input.next();
+						FileOutput.printFile(outputFile, "Determinan : " + det);
+					}
+					System.out.println("Determinan : " + det);
+				}
+				else if (detChoice == 2) {
+					double det = Determinant.determinanCofactor(input);
+					System.out.println("Tulis hasil ke file ? Y/N");
+					if (input.next().equals("Y")) {
+						System.out.println("Tuliskan nama file");
+						outputFile = input.next();
+						FileOutput.printFile(outputFile, "Determinan : " + det);
+					}
+					System.out.println("Determinan : " + det);
+				}
 			}
 			else if (choice == 3) {
 				int invChoice;
 				System.out.println("1. Metode Gauss-Jordan");
 				System.out.println("2. Metode adjoint");
 				invChoice = input.nextInt();
+				if (invChoice == 1) {
+					Matrix inverse = Inverse.inverseGaussJordan(input);
+					System.out.println("Tulis hasil ke file ? Y/N");
+					if (input.next().equals("Y")) {
+						System.out.println("Tuliskan nama file");
+						outputFile = input.next();
+						inverse.displayMatrix(outputFile);
+					}
+					else {
+						inverse.displayMatrix();
+					}
+				}
+				else if (invChoice == 2) {
+					Matrix inverse = Inverse.inverseAdjoint(input);
+					System.out.println("Tulis hasil ke file ? Y/N");
+					if (input.next().equals("Y")) {
+						System.out.println("Tuliskan nama file");
+						outputFile = input.next();
+						inverse.displayMatrix(outputFile);
+					}
+					else {
+						inverse.displayMatrix();
+					}
+				}
 			}
 			else if (choice == 4) {
 				Interpolation.interpolasiPolinom(input);
@@ -59,41 +107,14 @@ public class Main {
 			else {
 				exit = true;
 			}
+			
+			if (!exit) {
+				System.out.println("Continue ? Y/N");
+				if (input.next().equals("N")) {
+					exit = true;
+				}
+			}
 		}
 		input.close();
 	}
-		
-		// Uji coba
-//	    Matrix m = new Matrix();
-//	    Matrix m2 = new Matrix();
-//	    m.readMatrix("./test/testInverse.txt");
-//	    GaussJordan.inverseOBE(m).displayMatrix();
-//	    m2.readMatrix("./test/testMultiply.txt");
-//	    Matrix.multiplyMatrix(m,m2).displayMatrix();
-		
-//	    m.displayMatrix();
-//	    GaussElimination.gaussElim();
-//		MultiLinearRegression.multiRegression();
-//		Interpolation.interpolasi();
-		
-//		Bicubic.bicubic();
-//		Matrix m = new Matrix();
-////	m.displayMatrix();
-//		GaussJordan.gaussjordanElim();
-		
-//		Matrix m = new Matrix();
-//		m.readMatrix("./test/testDet.txt");
-//		System.out.println(Determinant.determinanCofactor(m));
-//		System.out.println(Determinant.determinanReduction(m));
-//		Matrix mInverse = Inverse.inverseGaussJordan(m);
-//		if (mInverse != null) {
-//			mInverse.displayMatrix();
-//		}
-//		mInverse = Inverse.inverseAdjoint(m);
-//		if (mInverse != null) {
-//			mInverse.displayMatrix();
-//		}
-		
-//		Inverse.solveSPLInverse();
 }
-

@@ -107,17 +107,26 @@ public class Matrix {
 			}
 				
 		}
-			
     }
 	
 	// Output Matrix
-    public void displayMatrix(){
+	public void displayMatrix() {
+		displayMatrix(null);
+	}
+	
+    public void displayMatrix(String fileName){
     	// Menuliskan seluruh matrix ke layar
+    	String matrixOutput = "";
+    	String newline = System.getProperty("line.separator");  
         for(int i=0; i<this.getRow(); i++){
             for(int j=0; j<this.getCol(); j++){
-                System.out.print(this.getElmt(i, j) + " ");
+                matrixOutput += this.getElmt(i, j) + " ";
             }
-            System.out.println();
+            matrixOutput += newline;
+        }
+        System.out.print(matrixOutput);
+        if (fileName != null) {
+        	FileOutput.printFile(fileName, matrixOutput);
         }
     }
     

@@ -3,6 +3,8 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class MultiLinearRegression {
+	static String newline = System.getProperty("line.separator"); 
+	
 	static Matrix inputDataRegresi(Scanner input) {
 		boolean fromFile;
 		int n,m;
@@ -49,13 +51,22 @@ public class MultiLinearRegression {
 	public static void multiRegression(Scanner input) {
 		Matrix data = inputDataRegresi(input);
 		double[] target = inputTargetRegresi(data,input);
-		multiRegression(data, target);
+		System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+		    multiRegression(data,target,outputFile);
+		}
+		else {
+			multiRegression(data,target,null);
+		}
 	}
 	
-	public static void multiRegression(Matrix data, double[] target) {
+	public static void multiRegression(Matrix data, double[] target, String outputFile) {
 		// Melakukan regresi linear berganda
 		double sum, hasilK;
 		boolean isResultZero;
+		String hasil = "";
 		
 		// Membuat matriks SPL regresi
 		Matrix equations = new Matrix(data.getCol(), data.getCol()+1);
@@ -118,6 +129,7 @@ public class MultiLinearRegression {
 			}
 			persamaan += Math.abs(result[result.length-1]) + "x" + (result.length-1);
 			System.out.println(persamaan);
+			hasil += persamaan+newline;
 			hasilK = result[0];
 			String asked = ""+target[0];
 			for (int i=0;i<target.length;i++) {
@@ -127,6 +139,10 @@ public class MultiLinearRegression {
 				}
 			}
 			System.out.println("f(" + asked + ") = " + hasilK);
+			hasil += "f(" + asked + ") = " + hasilK;
+			if (outputFile != null) {
+				FileOutput.printFile(outputFile, hasil);
+			}
 		}
 	}
 }

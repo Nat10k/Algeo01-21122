@@ -3,6 +3,7 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class SPL {
+	static String newline = System.getProperty("line.separator"); 
 	static Matrix inputSPL(Scanner input) {
 		// Menerima input persoalan SPL dalam bentuk Matrix
 		boolean fromFile;
@@ -131,13 +132,27 @@ public class SPL {
 	public static double[] gaussElim (Scanner input) {
 		// Overloader fungsi eliminasi Gauss
 		Matrix m = inputSPL(input);
-		return gaussElim(m,true);
+		System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			return gaussElim(m,true,outputFile);
+		}
+		else {
+			return gaussElim(m,true,null);
+		}
 	}
 	
-	public static double[] gaussElim (Matrix m, boolean SPL){
+	public static double[] gaussElim (Matrix m, boolean SPL) {
+		// Overloader fungsi eliminasi Gauss
+		return gaussElim(m,SPL,null);
+	}
+	
+	public static double[] gaussElim (Matrix m, boolean SPL, String outputFile){
     	// Fungsi eliminasi Gauss, m matrix augmented
         boolean noSolution, manySolution;
         int firstNonZero = -1;
+        String hasil="";
         
         // Membuat matriks segitiga atas
         forwardElimination(m);
@@ -167,7 +182,6 @@ public class SPL {
         			System.out.println("SPL tidak memiliki solusi unik. Regresi/interpolasi tidak dapat diselesaikan");
         		}
         		else {
-        			String hasil;
 	        		Matrix parametrik = new Matrix(m.getCol()-1, m.getCol()); // Matrix penampung koefisien persamaan parametrik
 	        		
 	        		// Mengisi matrix persamaan parametrik
@@ -190,7 +204,7 @@ public class SPL {
 	        		// Mencetak persamaan parametrik
 	        		for (int i=parametrik.getRow()-1; i>=0;i--) {
 	        			if(!zeroRow(parametrik,i,false)) {
-	        				hasil = "x" + (i+1) + " = ";
+	        				hasil += "x" + (i+1) + " = ";
 	        				boolean addedHasil = false;
 	        				for (int j=i+1; j<parametrik.getCol(); j++) {
 	        					if (j == parametrik.getCol()-1) {
@@ -225,14 +239,17 @@ public class SPL {
 	        						}
 	        					}
 	        				}
-	        				System.out.println(hasil);
+	        				hasil += newline;
 	        			}
 	        		}
-	        		
 	        		for (int i=0; i<parametrik.getRow();i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
 	        			if(zeroRow(parametrik,i,false)) {
-	        				System.out.println("x"+(i+1)+" = "+(char)(i+97));
+	        				hasil += "x"+(i+1)+" = "+(char)(i+97)+newline;
 	        			}
+	        		}
+	        		System.out.print(hasil);
+	        		if (outputFile != null) {
+	        			FileOutput.printFile(outputFile, hasil);
 	        		}
         		}
         	}
@@ -254,9 +271,15 @@ public class SPL {
                 	if (Math.abs(a[i]) < 1E-10) {
                 		a[i] = 0;
                 	}
-                	if (SPL) {
-                		System.out.println("x" + (i+1) + " = " + a[i]);
+                }
+                if (SPL) {
+                	for (int i=0; i<a.length; i++) {
+                		hasil += "x" + (i+1) + " = " + a[i] + newline;
                 	}
+            	}
+                System.out.println(hasil);
+                if (outputFile != null) {
+                	FileOutput.printFile(outputFile, hasil);
                 }
         	}
         }
@@ -266,12 +289,21 @@ public class SPL {
 	public static double[] gaussjordanElim (Scanner input) {
 		// Overloader fungsi gaussjordanElim
 		Matrix m = inputSPL(input);
-		return gaussjordanElim(m, true);
+		System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			return gaussjordanElim(m,outputFile);
+		}
+		else {
+			return gaussjordanElim(m,null);
+		}
 	}
 	
-    public static double[] gaussjordanElim (Matrix m, boolean SPL){
+    public static double[] gaussjordanElim (Matrix m, String outputFile){
         // Fungsi eliminasi Gauss Jordan, m matrix augmented, bisa digunakan untuk mencari determinan juga
         boolean noSolution, manySolution;
+        String hasil = "";
         int firstNonZero = -1;
         
         // Membuat matriks segitiga atas
@@ -295,97 +327,92 @@ public class SPL {
         }
         
         if (noSolution) { // SPL tidak memiliki solusi
-        	if (SPL) {
-        		System.out.println("SPL tidak memiliki solusi");
-        	} else {
-        		System.out.println("Matriks tidak memiliki invers");
-        	}
+        	System.out.println("SPL tidak memiliki solusi");
         }
         else {
         	if (manySolution) { // SPL memiliki banyak solusi
-        		if (!SPL) {
-        			System.out.println("Matriks tidak memiliki invers");
+        		Matrix parametrik = new Matrix(m.getCol()-1,m.getCol()); // Matrix penampung koefisien persamaan parametrik
+        		
+        		// Mengisi matrix persamaan parametrik
+        		for (int i=m.getRow()-1; i>=0;i--) {
+        			if(!zeroRow(m,i,true)) {
+        				// Cari elemen non-0 pertama pada baris
+        				for (int j=0; j<m.getCol()-1; j++) {
+        					if(m.getElmt(i, j) != 0) {
+        						firstNonZero = j;
+        						break;
+        					}
+        				}
+        				
+        				for (int j=m.getCol()-1; j>=0; j--) {
+        					parametrik.setElmt(firstNonZero, j, m.getElmt(i,j));
+        				}
+        			}
         		}
-        		else {
-        			String hasil;
-            		Matrix parametrik = new Matrix(m.getCol()-1,m.getCol()); // Matrix penampung koefisien persamaan parametrik
-            		
-            		// Mengisi matrix persamaan parametrik
-            		for (int i=m.getRow()-1; i>=0;i--) {
-            			if(!zeroRow(m,i,true)) {
-            				// Cari elemen non-0 pertama pada baris
-            				for (int j=0; j<m.getCol()-1; j++) {
-            					if(m.getElmt(i, j) != 0) {
-            						firstNonZero = j;
-            						break;
-            					}
-            				}
-            				
-            				for (int j=m.getCol()-1; j>=0; j--) {
-            					parametrik.setElmt(firstNonZero, j, m.getElmt(i,j));
-            				}
-            			}
-            		}
-            		
-            		// Mencetak persamaan parametrik
-            		for (int i=parametrik.getRow()-1; i>=0;i--) {
-            			if(!zeroRow(parametrik,i,false)) {
-            				hasil = "x" + (i+1) + " = ";
-            				boolean addedHasil = false;
-            				for (int j=i+1; j<parametrik.getCol(); j++) {
-            					if (j == parametrik.getCol()-1) {
-            						if (parametrik.getElmt(i,j) == 0 && !addedHasil) {
-            							hasil += parametrik.getElmt(i, j);
+        		
+        		// Mencetak persamaan parametrik
+        		for (int i=parametrik.getRow()-1; i>=0;i--) {
+        			if(!zeroRow(parametrik,i,false)) {
+        				hasil += "x" + (i+1) + " = ";
+        				boolean addedHasil = false;
+        				for (int j=i+1; j<parametrik.getCol(); j++) {
+        					if (j == parametrik.getCol()-1) {
+        						if (parametrik.getElmt(i,j) == 0 && !addedHasil) {
+        							hasil += parametrik.getElmt(i, j);
+    							}
+        						else {
+        							if (parametrik.getElmt(i,j) > 0 && addedHasil) {
+        								hasil += "+";
         							}
-            						else {
-            							if (parametrik.getElmt(i,j) > 0 && addedHasil) {
-            								hasil += "+";
-            							}
-            							if (parametrik.getElmt(i, j) != 0) {
-            								hasil += parametrik.getElmt(i, j);
-            							}
-            						}
+        							if (parametrik.getElmt(i, j) != 0) {
+        								hasil += parametrik.getElmt(i, j);
+        							}
         						}
-            					else if (parametrik.getElmt(i, j) != 0) {
-            						// Substitusi persamaan parametrik yang sudah ada sebelumnya
-            						if (!zeroRow(parametrik,j,false)) {
-            							for (int k=parametrik.getCol()-1; k >= 0; k--) {
-            								if (k != j) {
-            									parametrik.setElmt(i, k, parametrik.getElmt(i, k) + (-1)*parametrik.getElmt(i, j)*parametrik.getElmt(j, k));
-            								}
-            	        				}
-            							parametrik.setElmt(i, j, 0);
-            						}
-            						else {
-            							if ((-1)*parametrik.getElmt(i, j) > 0 && addedHasil) {
-            								hasil += "+";
-            							}
-            							hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
-            							addedHasil = true;
-            						}
-            					}
-            				}
-            				System.out.println(hasil);
-            			}
-            		}
-            		
-            		for (int i=0; i<parametrik.getRow();i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
-            			if(zeroRow(parametrik,i,false)) {
-            				System.out.println("x"+(i+1)+" = "+(char)(i+97));
-            			}
-            		}
+    						}
+        					else if (parametrik.getElmt(i, j) != 0) {
+        						// Substitusi persamaan parametrik yang sudah ada sebelumnya
+        						if (!zeroRow(parametrik,j,false)) {
+        							for (int k=parametrik.getCol()-1; k >= 0; k--) {
+        								if (k != j) {
+        									parametrik.setElmt(i, k, parametrik.getElmt(i, k) + (-1)*parametrik.getElmt(i, j)*parametrik.getElmt(j, k));
+        								}
+        	        				}
+        							parametrik.setElmt(i, j, 0);
+        						}
+        						else {
+        							if ((-1)*parametrik.getElmt(i, j) > 0 && addedHasil) {
+        								hasil += "+";
+        							}
+        							hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
+        							addedHasil = true;
+        						}
+        					}
+        				}
+        				hasil += newline;
+        			}
+        		}
+        		for (int i=0; i<parametrik.getRow();i++) { // Mengecek variabel x yang tidak memiliki nilai tertentu
+        			if(zeroRow(parametrik,i,false)) {
+        				hasil += "x"+(i+1)+" = "+(char)(i+97)+newline;
+        			}
+        		}
+        		System.out.println(hasil);
+        		if (outputFile != null) {
+        			FileOutput.printFile(outputFile, hasil);
         		}
         	}
         	else { // SPL memiliki solusi unik
-                 for (int i=0; i<a.length; i++) {
-                 	a[i] = m.getElmt(i, m.getCol()-1);
-                 	if (Math.abs(a[i]) < 1E-10) {
-                		a[i] = 0;
-                	}
-                 	if (SPL) {
-                 		System.out.println("x"+(i+1)+ " = " + a[i]);
-                 	}
-                 }
+	             for (int i=0; i<a.length; i++) {
+	             	a[i] = m.getElmt(i, m.getCol()-1);
+	             	if (Math.abs(a[i]) < 1E-10) {
+	            		a[i] = 0;
+	            	}
+	             	hasil += "x"+(i+1)+ " = " + a[i] + newline;
+	             }
+	             System.out.println(hasil);
+        		 if (outputFile != null) {
+        			FileOutput.printFile(outputFile, hasil);
+        		 }
         	}
         }
         return a;
@@ -393,10 +420,18 @@ public class SPL {
     
     public static Matrix solveSPLInverse(Scanner input) {
     	Matrix arr = inputSPL(input);
-    	return solveSPLInverse(arr,true);
+    	System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			return solveSPLInverse(arr, outputFile);
+		}
+		else {
+			return solveSPLInverse(arr,null);
+		}
     }
     
-    public static Matrix solveSPLInverse(Matrix arr, boolean SPL){
+    public static Matrix solveSPLInverse(Matrix arr, String outputFile){
     	// Menyelesaikan SPL memakai inverse matrix
         int brs = arr.getRow();
         int kol = arr.getCol();
@@ -404,6 +439,8 @@ public class SPL {
         Matrix invA;
         Matrix B = new Matrix(brs,1);
         Matrix result;
+        String hasil="";
+        
         for (int i = 0; i < brs; ++i){
             for (int j = 0; j < kol - 1; ++j){
             	A.setElmt(i, j, arr.getElmt(i, j));
@@ -417,15 +454,73 @@ public class SPL {
         invA = Inverse.inverseGaussJordan(A);
         if (invA != null) {
         	result = Matrix.multiplyMatrix(invA, B);
-        	if (SPL) { // Hasil SPL perlu dituliskan
-        		for (int i=0; i<result.getRow(); i++) {
-            		System.out.println("x"+(i+1)+" = "+result.getElmt(i, 0));
-            	}
+    		for (int i=0; i<result.getRow(); i++) {
+        		hasil += "x"+(i+1)+" = "+result.getElmt(i, 0) + newline;
         	}
+    		System.out.println(hasil);
+    		if (outputFile != null) {
+    			FileOutput.printFile(outputFile, hasil);
+    		}
         	return result;
         }
         else {
         	return null;
         }
     }
+    
+    public static double[] cramer(Scanner input) {
+    	Matrix m = inputSPL(input);
+    	System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			return cramer(m, outputFile);
+		}
+		else {
+			return cramer(m,null);
+		}
+    }
+    
+    public static double[] cramer(Matrix m, String outputFile){
+    	// Penyelesaian SPL memakai kaidah Cramer
+		double det, det1;
+		Matrix cramer, temp;
+		String hasil="";
+		double[] result = new double[m.getCol()-1];
+		double[] y = new double[m.getRow()];
+		
+		cramer = new Matrix(m.getRow(), m.getCol()-1);
+		temp = new Matrix(m.getRow(), m.getCol()-1);
+		for(int i = 0; i<m.getRow(); i++){
+			for(int j = 0; j<m.getCol()-1; j++){
+				temp.setElmt(i, j, m.getElmt(i, j));
+			}
+		}
+		det = Determinant.determinanReduction(temp);
+		if (det != 0) {
+			for(int i = 0; i<m.getRow(); i++){
+				y[i] = m.getElmt(i, m.getCol()-1);
+			}
+			for(int j = 0; j < temp.getCol(); j++){
+				cramer = Matrix.copyMatrix(temp);
+				for(int i = 0; i< temp.getRow(); i++){
+					cramer.setElmt(i, j, y[i]);
+				} 
+				cramer.displayMatrix();
+				det1 = Determinant.determinanReduction(cramer);
+				result[j] = (det1/det);
+			}
+			for (int i=0; i<result.length; i++) {
+				hasil += "x" + (i+1) + " = " + result[i] + newline;
+			}
+			System.out.println(hasil);
+			if (outputFile != null) {
+				FileOutput.printFile(outputFile, hasil);
+			}
+		}
+		else {
+			System.out.println("Matriks koefisien memiliki determinan 0, SPL tidak bisa diselesaikan");
+		}
+		return result;
+	}
 }

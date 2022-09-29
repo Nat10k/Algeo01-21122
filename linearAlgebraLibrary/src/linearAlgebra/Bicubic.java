@@ -15,17 +15,26 @@ public class Bicubic {
 	
 	public static void bicubic(Scanner input) {
 		Matrix inputMtrx = inputFBicubic(input);
-		bicubic(inputMtrx);
+		System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			bicubic(inputMtrx,outputFile);
+		}
+		else {
+			bicubic(inputMtrx,null);
+		}
 	}
 	
-	public static void bicubic(Matrix inputMtrx) {
+	public static void bicubic(Matrix inputMtrx, String outputFile) {
 		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4
 		int x,y,pangkatX,pangkatY; // x = integer [-1..2], y = integer [-1..2], pangkatX = integer [0..3], pangkatY = integer [0..3]
 		Matrix xMat = new Matrix(16,16); // Matriks koefisien X
 		Matrix nilaiF = new Matrix(16,1);
+		Matrix inputTranspose;
 		double[] nilaiAB = new double[2]; // Array penampung nilai A,B yang ingin dicari hasil f(A,B) nya
 		Matrix arrayA; // Array penampung nilai aij
-		double hasil;
+		double result;
 		
 		// Menyimpan nilai a,b yang ingin dicari ke array nilaiAB
 		for (int i=0; i<nilaiAB.length; i++) {
@@ -33,12 +42,14 @@ public class Bicubic {
 		}
 		inputMtrx.mtrx.get(inputMtrx.getRow()-1).clear();
 		inputMtrx.row--;
+		inputMtrx.col = 4;
 		
 		// Memasukkan nilai f(x,y) dari inputMtrx ke matrix nilaiF 
+		inputTranspose = Matrix.transpose(inputMtrx);
 		int newRowNilaiF = 0;
 		for (int i=0; i<4; i++) {
 			for (int j=0; j<4; j++) {
-				nilaiF.setElmt(newRowNilaiF,0,inputMtrx.getElmt(i, j));
+				nilaiF.setElmt(newRowNilaiF,0,inputTranspose.getElmt(i, j));
 				newRowNilaiF++;
 			}
 		}
@@ -72,10 +83,13 @@ public class Bicubic {
 		}
 		// Mengisi matriks a dari hasil perkalian matrix X dengan matrix inputMtrx
 		arrayA = Matrix.multiplyMatrix(Inverse.inverseGaussJordan(xMat),nilaiF);
-		hasil = 0;
+		result = 0;
 		for (int i=0; i<arrayA.getRow(); i++) {
-			hasil += arrayA.getElmt(i, 0)*Math.pow(nilaiAB[0],i%4)*Math.pow(nilaiAB[1],Math.floorDiv(i, 4));
+			result += arrayA.getElmt(i, 0)*Math.pow(nilaiAB[0],i%4)*Math.pow(nilaiAB[1],Math.floorDiv(i, 4));
 		}
-		System.out.println("f("+nilaiAB[0]+","+nilaiAB[1]+") = "+hasil);
+		System.out.println("f("+nilaiAB[0]+","+nilaiAB[1]+") = "+result);
+		if (outputFile != null) {
+			FileOutput.printFile(outputFile, "f("+nilaiAB[0]+","+nilaiAB[1]+") = "+result);
+		}
 	}
 }

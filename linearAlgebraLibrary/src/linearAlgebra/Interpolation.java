@@ -3,6 +3,8 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Interpolation {
+	static String newline = System.getProperty("line.separator"); 
+	
 	static Matrix inputTitikInterpolasi(Scanner input) {
 		int n;
         Matrix titik = new Matrix();
@@ -41,14 +43,23 @@ public class Interpolation {
 	public static void interpolasiPolinom(Scanner input) {
 		Matrix titik = inputTitikInterpolasi(input);
 		double x = inputX(input);
-		interpolasiPolinom(titik,x);
+		System.out.println("Simpan hasil ke dalam file ? Y/N");
+		if (input.next().equals("Y")) {
+			System.out.println("Masukkan nama file output");
+			String outputFile = input.next();
+			interpolasiPolinom(titik,x,outputFile);
+		}
+		else {
+			interpolasiPolinom(titik,x,null);
+		}
 	}
 	
-	public static void interpolasiPolinom(Matrix titik, double x){
+	public static void interpolasiPolinom(Matrix titik, double x, String outputFile){
     	// Fungsi interpolasi polinom
         int n;
         double y; // hasil dari x yang dicari
         double[] a;
+        String hasil="";
         Matrix m;
         
         n = titik.getRow();
@@ -72,14 +83,24 @@ public class Interpolation {
         for (int i=1; i<n; i++){
             y += a[i]*Math.pow(x, i);
         }
-        System.out.print("f(x) = ");
+        hasil+= "f(x) = ";
         for(int i = m.getRow()-1; i>=0; i--){
             if (a[i] > 0) {
-                System.out.print("+");
+                hasil += "+";
             }
-            System.out.print(a[i]+"x^"+ (i));
+            if (i > 0) {
+            	hasil += a[i]+"x^"+ (i);
+            }
+            else {
+            	hasil += a[i];
+            }
         }
-        System.out.println();
-        System.out.println("f("+x+") = "+ (y) );
+        hasil += newline;
+        hasil += "f("+x+") = "+ (y);
+        
+        System.out.println(hasil);
+        if(outputFile != null) {
+        	FileOutput.printFile(outputFile,hasil);
+        }
     }
 }
