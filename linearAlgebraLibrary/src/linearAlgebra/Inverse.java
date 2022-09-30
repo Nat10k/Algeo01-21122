@@ -3,9 +3,9 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Inverse {
-	// Class operasi inverse
+	/** Class operasi inverse */
 	static Matrix inputInverse(Scanner input) {
-		// Fungsi untuk input matriks persoalan determinan
+		/** Fungsi untuk input matriks persoalan inverse matriks */
 		boolean fromFile;
     	Matrix m = new Matrix();
     	
@@ -26,19 +26,19 @@ public class Inverse {
     	return m;
 	}
 	
-	public static Matrix matrixCofactor(Matrix arr){
-		// Membuat matriks kofaktor dari Matrix arr
-		Matrix mNew = new Matrix(arr.getRow(),arr.getCol());
-        for (int i = 0; i < arr.getRow(); ++i){
-            for (int j = 0; j < arr.getCol(); ++j){
-            	Matrix temp = new Matrix(arr.getRow()-1,arr.getCol()-1);
+	public static Matrix matrixCofactor(Matrix m){
+		/** Membuat matriks kofaktor dari Matrix m */
+		Matrix mNew = new Matrix(m.getRow(),m.getCol());
+        for (int i = 0; i < m.getRow(); ++i){
+            for (int j = 0; j < m.getCol(); ++j){
+            	Matrix temp = new Matrix(m.getRow()-1,m.getCol()-1);
                 int iTemp = 0;
                 int jTemp = 0;
                 //Mengisi temp
-                for (int brs = 0; brs < arr.getRow(); ++brs){
-                    for (int kol = 0; kol < arr.getCol(); ++kol){
+                for (int brs = 0; brs < m.getRow(); ++brs){
+                    for (int kol = 0; kol < m.getCol(); ++kol){
                         if ((brs != i) && (kol != j)){
-                        	temp.setElmt(iTemp, jTemp, arr.getElmt(brs, kol));
+                        	temp.setElmt(iTemp, jTemp, m.getElmt(brs, kol));
                             jTemp += 1;
                             if (jTemp == temp.getRow()){
                                 jTemp = 0;
@@ -53,20 +53,22 @@ public class Inverse {
         return mNew;
     }
 
-    public static Matrix adjoint(Matrix arr){
-        return Matrix.transpose(matrixCofactor(arr));
+    public static Matrix adjoint(Matrix m){
+    	/** Menghasilkan matriks adjoin dari matriks m */
+        return Matrix.transpose(matrixCofactor(m));
     }
     
     public static Matrix inverseAdjoint(Scanner input) {
+    	/** Menerima input matriks lalu menghasilkan inversenya dengan metode adjoin */
     	Matrix m = inputInverse(input);
     	return inverseAdjoint(m);
     }
     
-	public static Matrix inverseAdjoint(Matrix arr){
-		// Menghasilkan inverse Matriks dengan metode adjoint
-        double det = Determinant.determinanReduction(arr);
+	public static Matrix inverseAdjoint(Matrix m){
+		/** Menghasilkan inverse matriks dengan metode adjoint, diasumsikan m matriks persegi */
+        double det = Determinant.determinanReduction(m);
         if (det != 0) {
-        	Matrix mNew = adjoint(arr);
+        	Matrix mNew = adjoint(m);
             for (int i = 0; i < mNew.getRow(); ++i){
                 for (int j = 0; j < mNew.getCol(); ++j){
                 	mNew.setElmt(i, j, mNew.getElmt(i, j)/det);
@@ -81,12 +83,13 @@ public class Inverse {
     }
 	
 	public static Matrix inverseGaussJordan(Scanner input) {
+		/** Menerima input matriks lalu menghasilkan inverse matriks dengan metode Gauss-Jordan */
 		Matrix m = inputInverse(input);
     	return inverseGaussJordan(m);
 	}
 	
 	public static Matrix inverseGaussJordan(Matrix m) {
-    	// Prosedur inverse memakai eliminasi Gauss-Jordan, diasumsikan m adalah matriks persegi
+    	/** Prosedur inverse memakai eliminasi Gauss-Jordan, diasumsikan m adalah matriks persegi */
     	Matrix addedIdentity = Matrix.copyMatrix(m);
     	Matrix inverseM;
     	boolean invertible = true;

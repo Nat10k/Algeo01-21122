@@ -3,22 +3,23 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class SPL {
+	/** Class penyelesaian persoalan SPL */
 	static String newline = System.getProperty("line.separator"); 
 	static Matrix inputSPL(Scanner input) {
-		// Menerima input persoalan SPL dalam bentuk Matrix
+		/** Menerima input persoalan SPL dalam bentuk Matrix */
 		boolean fromFile;
     	Matrix m = new Matrix();
     	
-    	// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
     	System.out.println("Masukan dari file ?");
     	fromFile = input.nextBoolean();
-    	if (fromFile) {
+    	if (fromFile) { // Menerima SPL dari file
     		String fileName;
     		System.out.println("Masukkan path file");
     		fileName = input.next();
     		m.readMatrix(fileName);
     	}
     	else {
+    		// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
     		System.out.println("Masukkan banyak persamaan");
         	int jumPersamaan = input.nextInt();
         	System.out.println("Masukkan banyak variabel");
@@ -33,14 +34,14 @@ public class SPL {
 	}
 	
 	static void forwardElimination(Matrix m, boolean inv) {
-		// Membuat matriks m menjadi matriks eselon baris
+		/** Membuat matriks m menjadi matriks eselon baris */
 		int row_max, colLimit; // colLimit adalah pembatas kolom yang disearch untuk nilai max
 		double max, factor;
 		
-		if (inv) {
+		if (inv) { // Digunakan untuk persoalan inverse
 			colLimit = m.getRow();
 		}
-		else {
+		else { // Digunakan untuk persoalan SPL
 			colLimit = m.getCol()-1;
 		}
 		
@@ -83,7 +84,7 @@ public class SPL {
 	}
 	
 	static void backwardElimination(Matrix m) {
-    	// Mengubah matriks eselon baris menjadi matriks eselon baris tereduksi
+    	/** Mengubah matriks eselon baris m menjadi matriks eselon baris tereduksi */
     	double factor;
     	for (int i=m.getRow()-1; i>0; i--) {
     		// Kurangi baris di atas baris i dengan baris i
@@ -106,7 +107,7 @@ public class SPL {
 	}
 	
 	static boolean zeroRow(Matrix m, int rowIdx, boolean SPL, boolean inv) {
-		// Mengembalikan true jika baris rowIdx berisi 0 saja (untuk non-SPL) atau semua koefisien 0 (untuk SPL)
+		/** Mengembalikan true jika baris rowIdx berisi 0 saja (untuk non-SPL) atau semua koefisien 0 (untuk SPL) */
 		boolean isZeroRow = true;
 		int colLimit; // Batas kolom yang perlu dicari
 		if (SPL) {
@@ -130,26 +131,26 @@ public class SPL {
 	}
 	
 	public static double[] gaussElim (Scanner input) {
-		// Overloader fungsi eliminasi Gauss
+		/** Menerima input matriks augmented SPL lalu melakukan eliminasi Gauss */
 		Matrix m = inputSPL(input);
 		System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil disimpan ke file
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 			return gaussElim(m,true,outputFile);
 		}
-		else {
+		else { // Hasil ditampilkan ke layar saja
 			return gaussElim(m,true,null);
 		}
 	}
 	
 	public static double[] gaussElim (Matrix m, boolean SPL) {
-		// Overloader fungsi eliminasi Gauss
+		/** Overloader fungsi gaussElim untuk fungsi lain */
 		return gaussElim(m,SPL,null);
 	}
 	
 	public static double[] gaussElim (Matrix m, boolean SPL, String outputFile){
-    	// Fungsi eliminasi Gauss, m matrix augmented
+    	/** Melakukan eliminasi Gauss pada matriks augmented m */
         boolean noSolution, manySolution;
         int firstNonZero = -1;
         String hasil="";
@@ -234,7 +235,15 @@ public class SPL {
 	        							if ((-1)*parametrik.getElmt(i, j) > 0 && addedHasil) {
 	        								hasil += "+";
 	        							}
-	        							hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
+	        							if ((-1)*parametrik.getElmt(i, j) == 1) {
+	        								hasil += (char)(j+97);
+	        							}
+	        							else if ((-1)*parametrik.getElmt(i, j) == -1) {
+	        								hasil += "-" + (char)(j+97);
+	        							}
+	        							else {
+	        								hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
+	        							}
 	        							addedHasil = true;
 	        						}
 	        					}
@@ -287,21 +296,21 @@ public class SPL {
     }
 	
 	public static double[] gaussjordanElim (Scanner input) {
-		// Overloader fungsi gaussjordanElim
+		/** Menerima input matriks augmented lalu melakukan eliminasi Gauss-Jordan */
 		Matrix m = inputSPL(input);
 		System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil ditampilkan ke layar
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 			return gaussjordanElim(m,outputFile);
 		}
-		else {
+		else { // Hasil ditampilkan ke layar saja
 			return gaussjordanElim(m,null);
 		}
 	}
 	
     public static double[] gaussjordanElim (Matrix m, String outputFile){
-        // Fungsi eliminasi Gauss Jordan, m matrix augmented, bisa digunakan untuk mencari determinan juga
+        /** Melakukan eliminasi Gauss-Jordan pada matriks augmented m */
         boolean noSolution, manySolution;
         String hasil = "";
         int firstNonZero = -1;
@@ -383,7 +392,15 @@ public class SPL {
         							if ((-1)*parametrik.getElmt(i, j) > 0 && addedHasil) {
         								hasil += "+";
         							}
-        							hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
+        							if ((-1)*parametrik.getElmt(i, j) == 1) {
+        								hasil += (char)(j+97);
+        							}
+        							else if ((-1)*parametrik.getElmt(i, j) == -1) {
+        								hasil += "-" + (char)(j+97);
+        							}
+        							else {
+        								hasil += (-1)*parametrik.getElmt(i, j) + "" + (char)(j+97);
+        							}
         							addedHasil = true;
         						}
         					}
@@ -419,20 +436,21 @@ public class SPL {
     }
     
     public static Matrix solveSPLInverse(Scanner input) {
+    	/** Menerima input matriks augmented lalu menyelesaikan SPL dengan metode inverse matriks */
     	Matrix arr = inputSPL(input);
     	System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil disimpan ke file
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 			return solveSPLInverse(arr, outputFile);
 		}
-		else {
+		else { // Hasil ditampilkan ke layar saja
 			return solveSPLInverse(arr,null);
 		}
     }
     
     public static Matrix solveSPLInverse(Matrix arr, String outputFile){
-    	// Menyelesaikan SPL memakai inverse matrix
+    	/** Menyelesaikan SPL memakai inverse matriks koefisien */
         int brs = arr.getRow();
         int kol = arr.getCol();
         Matrix A = new Matrix(brs,kol-1);
@@ -469,6 +487,7 @@ public class SPL {
     }
     
     public static double[] cramer(Scanner input) {
+    	/** Menerima input matriks augmented lalu menyelesaikan SPL dengan kaidah Cramer */
     	Matrix m = inputSPL(input);
     	System.out.println("Simpan hasil ke dalam file ? Y/N");
 		if (input.next().equals("Y")) {
@@ -482,7 +501,7 @@ public class SPL {
     }
     
     public static double[] cramer(Matrix m, String outputFile){
-    	// Penyelesaian SPL memakai kaidah Cramer
+    	/** Menyelesaikan SPL dari matriks augmented m memakai Kaidah Cramer */
 		double det, det1;
 		Matrix cramer, temp;
 		String hasil="";

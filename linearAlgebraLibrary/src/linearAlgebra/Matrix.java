@@ -4,17 +4,19 @@ import java.io.*;
 
 // ADT Matrix
 public class Matrix {
+	/** Class ADT Matrix */
 	// Atribut
-	public ArrayList<ArrayList<Double>> mtrx = new ArrayList<>(); // Bagian matrix
-	public int row,col; // Banyak baris dan kolom matrix
+	public ArrayList<ArrayList<Double>> mtrx = new ArrayList<>(); /** ArrayList sebagai matriks */
+	public int row,col; /** Banyak baris dan kolom matrix */
 	
-	public Matrix() { // Matrix belum diketahui ukurannya (misal saat membaca dari file
+	public Matrix() { 
+		/** Inisialisasi matriks yang belum diketahui ukurannya */
 		row =0;
 		col = 0;
 	}
 	
 	public Matrix(int nRow, int nCol) {
-		// Inisialisasi Matrix kosong
+		/** Inisialisasi Matrix kosong berukuran nRow x nCol */
 		if (nRow > 0 && nCol > 0) {
 			setSize(nRow, nCol);
 		}
@@ -22,20 +24,22 @@ public class Matrix {
 	
 	// Selektor
 	public int getRow() {
+		/** Mengembalikan banyak baris matriks */
 		return this.row;
 	}
 	
 	public int getCol() {
+		/** Mengembalikan banyak kolom matriks */
 		return this.col;
 	}
 	
 	public double getElmt(int i, int j) {
-		// Mengembalikan elemen matriks di indeks i,j, diasumsikan indeks valid
+		/** Mengembalikan elemen matriks di indeks i,j, diasumsikan indeks valid */
 		return this.mtrx.get(i).get(j);
 	}
 	
 	public void setSize(int nRow, int nCol) {
-		// Membuat matrix "kosong" berukuran nRow x nCol
+		/** Membuat matrix "kosong" (hanya berisi 0) berukuran nRow x nCol */
 		this.mtrx.clear();
 		for (int i=0; i<nRow; i++) {
 			this.addRow();
@@ -46,33 +50,37 @@ public class Matrix {
 	}
 	
 	public void setElmt(int i, int j, double val) {
-		// Mengubah elemen matriks di indeks i,j dengan nilai val, diasumsikan indeks valid
+		/** Mengubah elemen matriks di indeks i,j dengan nilai val, diasumsikan indeks valid */
 		this.mtrx.get(i).set(j, val);
 	}
 	
 	public void addRow() {
-		// Menambahkan baris baru ke matrix
+		/** Menambahkan baris baru ke matrix */
 		this.mtrx.add(new ArrayList <>());
 		this.row++;
 	}
 	
 	public void addElmt(int i, double val) {
-		// Menambahkan kolom baru beserta elemennya ke baris i
+		/** Menambahkan kolom baru beserta isinya ke baris i */
 		this.mtrx.get(i).add(val);
-		this.col = this.mtrx.get(i).size();
+		if (this.mtrx.get(i).size() > this.col) {
+			this.col = this.mtrx.get(i).size();
+		}
 	}
 	
 	// Input Matrix dari file/keyboard
 	public void readMatrix(int nRow, int nCol, Scanner input) {
+		/** Membaca isi matriks berukuran nRow x nCol */
 		readMatrix(nRow, nCol, null, input);
 	}
 	
 	public void readMatrix(String fileName) {
+		/** Membaca isi matriks dari file */
 		readMatrix(0, 0, fileName, null);
 	}
 	
 	public void readMatrix(int nRow, int nCol, String fileName, Scanner input){
-		// Mengisi matriks 
+		/** Membaca isi matriks berukuran nRow x nCol atau membaca matriks dari file */ 
 		if (fileName == null) {
 			// Membaca elemen matriks dari keyboard
 			this.setSize(nRow, nCol);
@@ -111,11 +119,12 @@ public class Matrix {
 	
 	// Output Matrix
 	public void displayMatrix() {
+		/** Menuliskan matriks ke layar saja */
 		displayMatrix(null);
 	}
 	
     public void displayMatrix(String fileName){
-    	// Menuliskan seluruh matrix ke layar
+    	/** Menuliskan matriks ke layar dan file (jika diberi fileName) */
     	String matrixOutput = "";
     	String newline = System.getProperty("line.separator");  
         for(int i=0; i<this.getRow(); i++){
@@ -132,7 +141,7 @@ public class Matrix {
     
     // Operasi Matrix
     public static Matrix multiplyMatrix(Matrix m1, Matrix m2) {
-    	// Menghasilkan matriks hasil perkalian m1 dengan m2, diasumsikan m1.getCol() = m2.getRow()
+    	/** Menghasilkan matriks hasil perkalian m1 dengan m2, diasumsikan m1.getCol() = m2.getRow() */
     	Matrix result = new Matrix(m1.getRow(),m2.getCol());
     	double sum;
     	
@@ -150,7 +159,7 @@ public class Matrix {
     }
     
     public static Matrix transpose(Matrix m) {
-    	// Menghasillkan matrix transpose matrix m
+    	/** Menghasillkan matriks transpose matriks m */
     	Matrix mTrans = new Matrix(m.getCol(),m.getRow());
     	for(int i=0;i<mTrans.getRow();i++) {
             for(int j=0;j<mTrans.getCol();j++) {
@@ -161,7 +170,7 @@ public class Matrix {
     }
     
     public static Matrix copyMatrix(Matrix m) {
-    	// Menghasilkan matrix salinan matrix m
+    	/** Menghasilkan matriks salinan matriks m */
     	Matrix mCopy = new Matrix(m.getRow(),m.getCol());
     	for (int i=0; i<mCopy.getRow(); i++) {
     		for (int j=0; j<mCopy.getCol(); j++) {
@@ -172,7 +181,7 @@ public class Matrix {
     }
     
     public static void swap(Matrix m, int row1, int row2) {
-    	// Menukar baris row1 dengan baris row2
+    	/** Menukar baris row1 dengan baris row2 */
     	if (row1 < 0 || row1 >= m.getRow() || row2 < 0 || row2 > m.getRow()){
     		System.out.println("Baris tidak valid");
     	}

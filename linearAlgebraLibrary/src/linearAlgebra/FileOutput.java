@@ -6,6 +6,7 @@ import java.io.*;
 //			https://www.geeksforgeeks.org/filewriter-class-in-java/
 class FileOutput {
 	static void printFile(String fileName, String output) {
+		/** Prosedur untuk menyimpan String output ke File fileName */
 		try {
 			FileWriter writer = new FileWriter(fileName);
 			writer.write(output);

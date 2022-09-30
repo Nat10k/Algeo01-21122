@@ -2,8 +2,9 @@ package linearAlgebra;
 import java.util.*;
 
 public class Main {
+	/** Class utama library linearAlgebra */
 	public static void main(String[] args) {
-		// Menu
+		/** Menu utama library linearAlgebra */
 		int choice;
 		boolean exit = false;
 		Scanner input = new Scanner(System.in);
@@ -41,7 +42,7 @@ public class Main {
 			}
 			else if (choice == 2) {
 				int detChoice;
-				System.out.println("1. Metode eliminasi Gauss-Jordan");
+				System.out.println("1. Metode reduksi baris");
 				System.out.println("2. Metode kofaktor");
 				detChoice = input.nextInt();
 				if (detChoice == 1) {

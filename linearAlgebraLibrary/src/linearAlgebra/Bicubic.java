@@ -3,8 +3,9 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Bicubic {
+	/** Class persoalan interpolasi bicubic */
 	static Matrix inputFBicubic(Scanner input) {
-		// Menerima nama file dan membaca array inputMtrx dari file
+		/** Membaca matriks nilai Fij dari file */
 		String fileName;
 		Matrix inputMtrx = new Matrix();
 		System.out.println("Masukkan path file");
@@ -14,20 +15,21 @@ public class Bicubic {
 	}
 	
 	public static void bicubic(Scanner input) {
+		/** Membaca matriks nilai Fij dari file lalu mengembalikan hasil interpolasi bicubicnya */
 		Matrix inputMtrx = inputFBicubic(input);
 		System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil disimpan ke file
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 			bicubic(inputMtrx,outputFile);
 		}
-		else {
+		else { // Hasil hanya ditampilkan ke layar
 			bicubic(inputMtrx,null);
 		}
 	}
 	
 	public static void bicubic(Matrix inputMtrx, String outputFile) {
-		// Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) berukuran 4x4
+		/** Melakukan interpolasi bicubic dengan menerima matrix hasil f(x,y) (inputMtrx) berukuran 4x4 */
 		int x,y,pangkatX,pangkatY; // x = integer [-1..2], y = integer [-1..2], pangkatX = integer [0..3], pangkatY = integer [0..3]
 		Matrix xMat = new Matrix(16,16); // Matriks koefisien X
 		Matrix nilaiF = new Matrix(16,1);
@@ -42,7 +44,6 @@ public class Bicubic {
 		}
 		inputMtrx.mtrx.get(inputMtrx.getRow()-1).clear();
 		inputMtrx.row--;
-		inputMtrx.col = 4;
 		
 		// Memasukkan nilai f(x,y) dari inputMtrx ke matrix nilaiF 
 		inputTranspose = Matrix.transpose(inputMtrx);

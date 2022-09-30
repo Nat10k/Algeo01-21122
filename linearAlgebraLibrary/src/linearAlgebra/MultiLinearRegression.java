@@ -3,9 +3,11 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class MultiLinearRegression {
+	/** Class persoalan regresi linier berganda */
 	static String newline = System.getProperty("line.separator"); 
 	
 	static Matrix inputDataRegresi(Scanner input) {
+		/** Menerima input data untuk regresi */
 		boolean fromFile;
 		int n,m;
 		double[] target;
@@ -38,7 +40,7 @@ public class MultiLinearRegression {
 	}
 	
 	static double[] inputTargetRegresi(Matrix data, Scanner input) {
-		// Menerima masukan target
+		/** Menerima masukan target regresi */
 		int n = data.getCol()-1;
 		double[] target = new double[n];
 		System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
@@ -49,21 +51,22 @@ public class MultiLinearRegression {
 	}
 	
 	public static void multiRegression(Scanner input) {
+		/** Menerima masukan data dan target regresi dan mengembalikan persamaan dan hasilnya */
 		Matrix data = inputDataRegresi(input);
 		double[] target = inputTargetRegresi(data,input);
 		System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil disimpan ke file
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 		    multiRegression(data,target,outputFile);
 		}
-		else {
+		else { // Hasil ditampilkan ke layar saja
 			multiRegression(data,target,null);
 		}
 	}
 	
 	public static void multiRegression(Matrix data, double[] target, String outputFile) {
-		// Melakukan regresi linear berganda
+		/** Melakukan regresi linear berganda berdasarkan data dan target */
 		double sum, hasilK;
 		boolean isResultZero;
 		String hasil = "";
@@ -106,7 +109,7 @@ public class MultiLinearRegression {
 		isResultZero = true;
 		for (int i=0; i<result.length; i++) {
 			if(result[i] != 0) {
-				isResultZero = false;
+				isResultZero = false; // Regresi memiliki hasil
 				break;
 			}
 		}

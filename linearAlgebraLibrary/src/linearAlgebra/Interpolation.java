@@ -3,9 +3,11 @@ package linearAlgebra;
 import java.util.Scanner;
 
 public class Interpolation {
+	/** Class persoalan inerpolasi polinom */
 	static String newline = System.getProperty("line.separator"); 
 	
 	static Matrix inputTitikInterpolasi(Scanner input) {
+		/** Menerima input matriks titik untuk interpolasi */
 		int n;
         Matrix titik = new Matrix();
         boolean fromFile;
@@ -34,28 +36,29 @@ public class Interpolation {
 	}
 	
 	static double inputX(Scanner input) {
-		// Menerima masukan nilai x yang ingin dicari hasilnya
+		/** Menerima masukan nilai x yang ingin dicari hasilnya */
 		System.out.println("Masukkan nilai x yang ingin dicari hasilnya");
 		double x = input.nextDouble();
 		return x;
 	}
 	
 	public static void interpolasiPolinom(Scanner input) {
+		/** Menerima input matriks titik, x yang ingin dicari nilainya, dan mengembalikan persamaan dan hasilnya */
 		Matrix titik = inputTitikInterpolasi(input);
 		double x = inputX(input);
 		System.out.println("Simpan hasil ke dalam file ? Y/N");
-		if (input.next().equals("Y")) {
+		if (input.next().equals("Y")) { // Hasil disimpan ke file
 			System.out.println("Masukkan nama file output");
 			String outputFile = input.next();
 			interpolasiPolinom(titik,x,outputFile);
 		}
-		else {
+		else { // Hasil ditampilkan ke layar saja
 			interpolasiPolinom(titik,x,null);
 		}
 	}
 	
 	public static void interpolasiPolinom(Matrix titik, double x, String outputFile){
-    	// Fungsi interpolasi polinom
+    	/** Melakukan interpolasi polinom berdasarkan matriks titik dan masukan nilai x */
         int n;
         double y; // hasil dari x yang dicari
         double[] a;

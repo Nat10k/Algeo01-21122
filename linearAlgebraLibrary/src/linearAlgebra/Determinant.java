@@ -1,11 +1,11 @@
 package linearAlgebra;
 
 import java.util.*;
-import java.io.*;
 
 public class Determinant {
+	/** Class operasi determinan */
 	static Matrix inputDeterminant(Scanner input) {
-		// Fungsi untuk input matriks persoalan determinan
+		/** Input matriks untuk persoalan determinan */
 		boolean fromFile;
     	Matrix m = new Matrix();
     	
@@ -27,7 +27,7 @@ public class Determinant {
 	}
 	
 	static void cofactor(Matrix m,Matrix temp, int a, int b){
-		// Membuat matriks cofactor dari matriks m
+		/** Membuat matriks kofaktor dari matriks m */
 		int N = m.getRow();
         int i =0;
         int j = 0;
@@ -45,12 +45,13 @@ public class Determinant {
     }
 	
 	public static double determinanCofactor (Scanner input) {
+		/** Menerima input matriks lalu mengembalikan hasil determinannya dengan metode kofaktor */
 		Matrix m = inputDeterminant(input);
 		return determinanCofactor(m);
 	}
 
     public static double determinanCofactor(Matrix m){
-    	// Menghasilkan determinan Matrix m dengan metode cofactor, diasumsikan m matriks persegi dan relatif kecil (ukuran kurang dari 10x10)
+    	/** Menghasilkan determinan matriks m dengan metode cofactor, diasumsikan m matriks persegi dan relatif kecil (ukuran kurang dari 10x10) */
     	int N = m.getRow();
     	if (N==1) {
     		return m.getElmt(0, 0);
@@ -71,6 +72,7 @@ public class Determinant {
     }
     
     static int detRowReduction(Matrix m){
+    	/** Mengubah matriks m menjadi matriks segitiga atas */
     	int N = m.getRow();
         int i = 0, l = 0, idx;
         double pengurang;
@@ -100,12 +102,13 @@ public class Determinant {
     }
     
     public static double determinanReduction(Scanner input) {
+    	/** Menerima input matriks lalu menghasilkan determinannya dengan metode reduksi baris */
     	Matrix m = inputDeterminant(input);
     	return determinanReduction(m);
     }
     
     public static double determinanReduction(Matrix m){
-    	// Menghasilkan determinan matrix m dengan metode reduksi baris, diasumsikan m matriks persegi
+    	/** Menghasilkan determinan matrix m dengan metode reduksi baris, diasumsikan m matriks persegi */
     	Matrix temp = Matrix.copyMatrix(m);
     	int N = m.getRow();
         int count = detRowReduction(temp);
