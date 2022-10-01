@@ -6,13 +6,11 @@ public class Determinant {
 	/** Class operasi determinan */
 	static Matrix inputDeterminant(Scanner input) {
 		/** Input matriks untuk persoalan determinan */
-		boolean fromFile;
     	Matrix m = new Matrix();
     	
     	// Menerima masukan jumlah persamaan, jumlah variabel, dan isi SPL
-    	System.out.println("Masukan dari file ?");
-    	fromFile = input.nextBoolean();
-    	if (fromFile) {
+    	System.out.println("Masukan dari file ? Y/N");
+		if (input.next().equals("Y")) {
     		String fileName;
     		System.out.println("Masukkan path file");
     		fileName = input.next();

@@ -7,12 +7,10 @@ public class SPL {
 	static String newline = System.getProperty("line.separator"); 
 	static Matrix inputSPL(Scanner input) {
 		/** Menerima input persoalan SPL dalam bentuk Matrix */
-		boolean fromFile;
     	Matrix m = new Matrix();
     	
-    	System.out.println("Masukan dari file ?");
-    	fromFile = input.nextBoolean();
-    	if (fromFile) { // Menerima SPL dari file
+    	System.out.println("Masukan dari file ? Y/N");
+		if (input.next().equals("Y")) { // Menerima SPL dari file
     		String fileName;
     		System.out.println("Masukkan path file");
     		fileName = input.next();
@@ -24,7 +22,7 @@ public class SPL {
         	int jumPersamaan = input.nextInt();
         	System.out.println("Masukkan banyak variabel");
         	int jumVariabel = input.nextInt();
-        	System.out.println("Masukan semua koefisien per persamaan diikuti hasil tiap persamaan di akhir");
+        	System.out.println("Masukan semua persamaan per baris. Format : ai1 ai2 .. ain bi.");
         	m.readMatrix(jumPersamaan,jumVariabel+1, input);
         }
     	return m;
@@ -208,6 +206,9 @@ public class SPL {
 	        				hasil += "x" + (i+1) + " = ";
 	        				boolean addedHasil = false;
 	        				for (int j=i+1; j<parametrik.getCol(); j++) {
+	        					if (Math.abs(parametrik.getElmt(i, j)) < 1E-10) {
+	        						parametrik.setElmt(i,j,0);
+	        					}
 	        					if (j == parametrik.getCol()-1) {
 	        						if (parametrik.getElmt(i,j) == 0 && !addedHasil) {
 	        							hasil += parametrik.getElmt(i, j);
@@ -281,7 +282,7 @@ public class SPL {
                 		a[i] = 0;
                 	}
                 }
-                if (SPL) {
+                if (SPL) { // Hasil persamaan dicetak
                 	for (int i=0; i<a.length; i++) {
                 		hasil += "x" + (i+1) + " = " + a[i] + newline;
                 	}
@@ -365,6 +366,9 @@ public class SPL {
         				hasil += "x" + (i+1) + " = ";
         				boolean addedHasil = false;
         				for (int j=i+1; j<parametrik.getCol(); j++) {
+        					if (Math.abs(parametrik.getElmt(i, j)) < 1E-10) {
+        						parametrik.setElmt(i,j,0);
+        					}
         					if (j == parametrik.getCol()-1) {
         						if (parametrik.getElmt(i,j) == 0 && !addedHasil) {
         							hasil += parametrik.getElmt(i, j);

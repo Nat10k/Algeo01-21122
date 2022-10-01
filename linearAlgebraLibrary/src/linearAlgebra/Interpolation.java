@@ -9,13 +9,10 @@ public class Interpolation {
 	static Matrix inputTitikInterpolasi(Scanner input) {
 		/** Menerima input matriks titik untuk interpolasi */
 		int n;
-        Matrix titik = new Matrix();
-        boolean fromFile;
-        
+        Matrix titik = new Matrix();        
         // Menerima masukan
-        System.out.println("Masukan dari file ?");
-		fromFile = input.nextBoolean();
-		if (fromFile) { // Menerima masukan dari file
+        System.out.println("Masukan dari file ? Y/N");
+		if (input.next().equals("Y")) { // Menerima masukan dari file
 			System.out.println("Masukkan path file");
 			String fileName = input.next();
 			titik.readMatrix(fileName);
@@ -26,8 +23,9 @@ public class Interpolation {
 	        
 	        // Menerima masukan nilai x,y dan memasukkannya ke dalam Matrix titik
 	        titik.setSize(n, 2);
+	        System.out.println("Masukkan setiap titik xi yi per baris. Format : xi yi.");
 	        for (int i=0; i<titik.getRow(); i++) {
-	        	System.out.println("Masukkan titik ke-"+ (i+1)+ " x"+(i+1)+" y"+(i+1));
+	        	System.out.println("x" + (i+1) + " y" + (i+1));
 	        	titik.setElmt(i, 0, input.nextDouble());
 	        	titik.setElmt(i, 1, input.nextDouble());
 	        }

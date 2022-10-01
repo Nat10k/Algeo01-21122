@@ -5,12 +5,28 @@ import java.util.Scanner;
 public class Bicubic {
 	/** Class persoalan interpolasi bicubic */
 	static Matrix inputFBicubic(Scanner input) {
-		/** Membaca matriks nilai Fij dari file */
-		String fileName;
+		/** Membaca matriks nilai Fij */
 		Matrix inputMtrx = new Matrix();
-		System.out.println("Masukkan path file");
-		fileName = input.next();
-		inputMtrx.readMatrix(fileName);
+		
+        System.out.println("Masukan dari file ? Y/N");
+		if (input.next().equals("Y")) { // Menerima masukan dari file
+			System.out.println("Masukkan path file");
+			String fileName = input.next();
+			inputMtrx.readMatrix(fileName);
+		} 
+		else { // Menerima masukan data dari keyboard
+			System.out.println("Masukkan setiap nilai Fij dalam bentuk matriks 4x4, setiap elemen dipisah spasi.");
+			inputMtrx.setSize(5, 4);
+			for (int i=0; i<4; i++) {
+				for (int j=0; j<4; j++) {
+					inputMtrx.setElmt(i, j, input.nextDouble());
+				}
+			}
+			System.out.println("Masukkan titik (a,b) yang ingin dicari hasil interpolasinya. Format : a b");
+			for (int j=0; j<2; j++) {
+				inputMtrx.setElmt(4, j, input.nextDouble());
+			}
+		}
 		return inputMtrx;
 	}
 	
@@ -46,7 +62,7 @@ public class Bicubic {
 		inputMtrx.row--;
 		
 		// Memasukkan nilai f(x,y) dari inputMtrx ke matrix nilaiF 
-		inputTranspose = Matrix.transpose(inputMtrx);
+		inputTranspose = Matrix.transpose(inputMtrx); // Ditranspose karena urutan pada matriks 4x4 terbalik dengan yang diminta untuk persamaan
 		int newRowNilaiF = 0;
 		for (int i=0; i<4; i++) {
 			for (int j=0; j<4; j++) {

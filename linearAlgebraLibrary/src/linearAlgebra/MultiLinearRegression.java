@@ -8,14 +8,11 @@ public class MultiLinearRegression {
 	
 	static Matrix inputDataRegresi(Scanner input) {
 		/** Menerima input data untuk regresi */
-		boolean fromFile;
 		int n,m;
-		double[] target;
 		Matrix data = new Matrix();
 		
-		System.out.println("Masukan dari file ?");
-		fromFile = input.nextBoolean();
-		if (fromFile) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
+		System.out.println("Masukan dari file ? Y/N");
+		if (input.next().equals("Y")) { // Menerima masukan dari file, nilai Xk yang ingin dicari diasumsikan ada di baris terakhir
 			System.out.println("Masukkan path file");
 			String fileName = input.next();
 			data.readMatrix(fileName);
@@ -27,13 +24,7 @@ public class MultiLinearRegression {
 			n = input.nextInt();
 			System.out.println("Masukkan banyak sample");
 			m = input.nextInt();
-			// Menerima masukan target
-			target = new double[n];
-			System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
-			for (int i = 0; i<n; i++) {
-				target[i] = input.nextDouble();
-			}
-			System.out.println("Masukkan semua data per sample, kolom terakhir sebagai hasilnya");
+			System.out.println("Masukkan semua data per baris. Format : xi1 x12 .. xin yi");
 			data.readMatrix(m, n+1, input);
 		}
 		return data;
@@ -43,7 +34,7 @@ public class MultiLinearRegression {
 		/** Menerima masukan target regresi */
 		int n = data.getCol()-1;
 		double[] target = new double[n];
-		System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya secara berurutan");
+		System.out.println("Masukkan nilai-nilai peubah yang ingin dicari hasilnya. Format : x1 x2 .. xn");
 		for (int i = 0; i<n; i++) {
 			target[i] = input.nextDouble();
 		}
