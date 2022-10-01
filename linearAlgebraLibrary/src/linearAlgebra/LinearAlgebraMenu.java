@@ -1,9 +1,9 @@
 package linearAlgebra;
 import java.util.*;
 
-public class Main {
+public class LinearAlgebraMenu {
 	/** Class utama library linearAlgebra */
-	public static void main(String[] args) {
+	public static void menu() {
 		/** Menu utama library linearAlgebra */
 		int choice;
 		boolean exit = false;
