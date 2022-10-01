@@ -529,7 +529,6 @@ public class SPL {
 				for(int i = 0; i< temp.getRow(); i++){
 					cramer.setElmt(i, j, y[i]);
 				} 
-				cramer.displayMatrix();
 				det1 = Determinant.determinanReduction(cramer);
 				result[j] = (det1/det);
 			}
