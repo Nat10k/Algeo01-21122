@@ -2,8 +2,6 @@ package linearAlgebra;
 
 import java.io.*;
 
-// Source : https://www.w3schools.com/java/java_files_create.asp
-//			https://www.geeksforgeeks.org/filewriter-class-in-java/
 class FileOutput {
 	static void printFile(String fileName, String output) {
 		/** Prosedur untuk menyimpan String output ke File fileName */
