@@ -24,8 +24,8 @@ public class Determinant {
     	return m;
 	}
 	
-	static void cofactor(Matrix m,Matrix temp, int a, int b){
-		/** Membuat matriks kofaktor dari matriks m */
+	static void minor(Matrix m,Matrix temp, int a, int b){
+		/** Membuat matriks minor dari matriks m */
 		int N = m.getRow();
         int i =0;
         int j = 0;
@@ -49,7 +49,7 @@ public class Determinant {
 	}
 
     public static double determinanCofactor(Matrix m){
-    	/** Menghasilkan determinan matriks m dengan metode cofactor, diasumsikan m matriks persegi dan relatif kecil (ukuran kurang dari 10x10) */
+    	/** Menghasilkan determinan matriks m dengan metode ekspansi kofaktor, diasumsikan m matriks persegi dan relatif kecil (ukuran kurang dari 10x10) */
     	int N = m.getRow();
     	if (N==1) {
     		return m.getElmt(0, 0);
@@ -61,7 +61,7 @@ public class Determinant {
             double det = 0;
             Matrix temp = new Matrix(N-1,N-1);
             for (int k=0; k < N; k++){
-                cofactor(m,temp,0,k);
+                minor(m,temp,0,k);
                 det += Math.pow(-1, k) * m.getElmt(0, k) * determinanCofactor(temp);
             }
             return det;

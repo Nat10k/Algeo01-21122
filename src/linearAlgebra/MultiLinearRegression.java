@@ -57,7 +57,7 @@ public class MultiLinearRegression {
 	}
 	
 	public static void multiRegression(Matrix data, double[] target, String outputFile) {
-		/** Melakukan regresi linear berganda berdasarkan data dan target */
+		/** Melakukan regresi linierr berganda berdasarkan data dan target. Diasumsikan hasil tidak pernah 0. */
 		double sum, hasilK;
 		boolean isResultZero;
 		String hasil = "";

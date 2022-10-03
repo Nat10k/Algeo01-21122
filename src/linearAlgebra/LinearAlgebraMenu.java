@@ -2,7 +2,7 @@ package linearAlgebra;
 import java.util.*;
 
 public class LinearAlgebraMenu {
-	/** Class utama library linearAlgebra */
+	/** Class menu library linearAlgebra */
 	public static void menu() {
 		/** Menu utama library linearAlgebra */
 		int choice;

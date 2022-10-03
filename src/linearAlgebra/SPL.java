@@ -55,7 +55,7 @@ public class SPL {
 		            }
 		        }
 		        
-		        if (max != 0) { // Jika kolom seluruhnya berisi 0, jangan lakukan pembagian maupun pertukaran baris, lanjut baris berikutnya
+		        if (max != 0) { // Jika kolom seluruhnya berisi 0, jangan lakukan pembagian maupun pertukaran baris, lanjut kolom berikutnya
 		        	if (row_max != k){ // Elemen terbesar ada di baris selain k
 			            Matrix.swap(m,row_max,k);
 			        }
